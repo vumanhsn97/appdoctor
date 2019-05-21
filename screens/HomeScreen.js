@@ -18,25 +18,8 @@ class HomeScreen extends Component {
             textsearch: "",
         }
 
-        this._bootstrapAsync();
+        //this._bootstrapAsync();
     }
-
-    _bootstrapAsync = async () => {
-        const userId = await AsyncStorage.getItem('UserId');
-        const password = await AsyncStorage.getItem('Password');
-        axios.post(api + 'doctors/log-in', {
-            MaBacSi: userId,
-            Password: password
-        })
-            .then(async (response) => {
-                if (response.data.status == 'success') {
-                    this.props.loadMyProfile(response.data.doctor);
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    };
 
     componentDidMount() {
         this.keyboardDidShowListener = Keyboard.addListener(

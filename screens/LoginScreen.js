@@ -75,6 +75,7 @@ export default class LoginPage extends Component {
     }
 
     handleLogin = () => {
+        console.log('login');
         if (this.state.name === '')
             this.setState({ errorMessage: 'Vui lòng nhập "Số điện thoại" của bạn' })
         else if (this.state.pass === '')

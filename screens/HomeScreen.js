@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux';
-import { View, ScrollView, Text, FlatList, ListView, TextInput, TouchableOpacity, Keyboard} from 'react-native';
+import { View, ScrollView, Text, FlatList, ListView, TextInput, TouchableOpacity, Keyboard } from 'react-native';
 import CardPatient from '../components/CardPatient';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as actions from '../actions';
@@ -16,10 +16,32 @@ class HomeScreen extends Component {
             patients: [],
             focus: false,
             textsearch: "",
+            loading: false
         }
 
-        //this._bootstrapAsync();
+        this._bootstrapAsync();
     }
+
+    _bootstrapAsync = async () => {
+        const userId = await AsyncStorage.getItem('UserId');
+        //AsyncStorage.clear();
+        console.log(userId);
+        axios(api + 'follows/list-doctor-following', {
+            params: {
+                MaBacSi: userId
+            }
+          }).then(response => {
+            let data = response.data;
+            if  (data.status == 'success') {
+                data = data.list_patients;
+                this.setState({ patients: data, data: data, loading: true});
+            }
+          })
+          .catch(error => {
+            console.log(error)
+          })
+    }
+
 
     componentDidMount() {
         this.keyboardDidShowListener = Keyboard.addListener(
@@ -46,18 +68,8 @@ class HomeScreen extends Component {
 
 
     componentWillMount() {
-        const patientsData = this.props.patients;
-        
-        this.setState({ patients: patientsData, data: patientsData });
-        
-        /*fetch('http://192.168.1.15:5500/patients')
-            .then((response) => response.json())
-            .then((responseJson) => {
-                console.log(responseJson.patients);
-            })
-            .catch((error) => {
-                console.error(error);
-            });*/
+        //const patientsData = this.props.patients;
+
     }
 
     searchPatient = ({ text }) => {
@@ -87,47 +99,58 @@ class HomeScreen extends Component {
         Keyboard.dismiss();
     }
 
+    _renderLayout = () => {
+        if (this.state.loading) {
+            return (
+                <View>
+                    <View style={{ flexDirection: 'row', marginBottom: 10, height: 60, borderBottomColor: '#EFEFEF', backgroundColor: 'rgba(54, 175, 160, 1)', alignItems: 'center' }}>
+                        <View style={{ flexDirection: 'row', backgroundColor: 'white', flex: 1, borderRadius: 15, marginLeft: 5, marginRight: 5 }}>
+                            <View style={{ justifyContent: 'center', paddingLeft: 10, paddingRight: 5 }}>
+                                {this.state.focus ? <TouchableOpacity onPress={this.backClick} >
+                                    <Icon name='arrow-circle-left' size={20} color='gray' />
+                                </TouchableOpacity> : <Icon name='search' size={20} color='gray' />}
+                            </View>
+                            <TextInput
+                                style={{ flex: 1, padding: 5, }}
+                                placeholder=''
+                                value={this.state.textsearch}
+                                onFocus={(text) => this.onInputFocus({ text })}
+                                onChangeText={(text) => this.searchPatient({ text })}
+                            />
+                        </View>
+                        {this.state.focus ? <Text></Text> : <TouchableOpacity>
+                            <View style={{ paddingLeft: 10, paddingRight: 10 }}>
+                                <Icon name='user-plus' size={20} color='white' />
+                            </View>
+                        </TouchableOpacity>}
+                    </View>
+                    <FlatList
+                        data={this.state.patients}
+                        keyboardShouldPersistTaps='always'
+                        keyExtractor={e => e.MaBenhNhan}
+                        renderItem={({ item }) => <CardPatient
+                            id={item.MaBenhNhan}
+                            noti={false}
+                            name={item.HoTen}
+                            avatar={item.Avatar}
+                            type='Tiểu đường'
+                            highlight={false}
+                            navigation={this.props.navigation}
+                        />}
 
+                    />
+                </View>
+            )
+        }
+        return (
+            <Text>loading</Text>
+        )
+    }
 
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <View style={{ flexDirection: 'row', marginBottom: 10, height: 60, borderBottomColor: '#EFEFEF', backgroundColor: 'rgba(54, 175, 160, 1)', alignItems: 'center' }}>
-                    <View style={{ flexDirection: 'row', backgroundColor: 'white', flex: 1, borderRadius: 15, marginLeft: 5, marginRight: 5 }}>
-                        <View style={{ justifyContent: 'center', paddingLeft: 10, paddingRight: 5 }}>
-                            {this.state.focus ? <TouchableOpacity onPress={this.backClick} >
-                                <Icon name='arrow-circle-left' size={20} color='gray' />
-                            </TouchableOpacity> : <Icon name='search' size={20} color='gray' />}
-                        </View>
-                        <TextInput
-                            style={{ flex: 1, padding: 5, }}
-                            placeholder=''
-                            value={this.state.textsearch}
-                            onFocus={(text) => this.onInputFocus({ text })}
-                            onChangeText={(text) => this.searchPatient({ text })}
-                        />
-                    </View>
-                    {this.state.focus ? <Text></Text> : <TouchableOpacity>
-                        <View style={{ paddingLeft: 10, paddingRight: 10 }}>
-                            <Icon name='user-plus' size={20} color='white' />
-                        </View>
-                    </TouchableOpacity>}
-                </View>
-                <FlatList
-                    data={this.props.patients}
-                    keyboardShouldPersistTaps='always'
-                    keyExtractor={e => e.id}
-                    renderItem={({ item }) => <CardPatient
-                        id={item.id}
-                        noti={item.noti}
-                        name={item.name}
-                        avatar={item.avatar}
-                        type={item.type}
-                        highlight={item.highlight}
-                        navigation={this.props.navigation}
-                    />}
-
-                />
+                {this._renderLayout()}
             </View>
         );
     }

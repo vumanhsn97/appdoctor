@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import CardItemProfile from '../components/CardItemProfile';
 import MyListCard from '../components/MyListCard';
 import * as actions from '../actions';
@@ -72,6 +72,25 @@ class ProfileScreen extends Component {
             }
         });
     }
+
+    _signOutAsync = async () => {     
+        Alert.alert(
+            'Bạn muốn thoát khỏi hệ thống?',
+            '',
+            [
+              {
+                text: 'Không',
+                onPress: () => console.log('Cancel Pressed'),
+              },
+              {text: 'Có', onPress: async () => {
+                await AsyncStorage.clear();
+                this.props.navigation.navigate('LoginStack');
+              }},
+            ],
+            {cancelable: false},
+          );
+        
+      };
 
     _renderView = () => {
         if (this.state.loading) {
@@ -196,19 +215,55 @@ class ProfileScreen extends Component {
                             settingDetail={this.props.profile.Email}
                         />
                     </Card>
+
+                    <Card title={
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginBottom: 15
+                        }}>
+                            <AntDesign name="setting" size={20} />
+                            <Text style={{
+                                fontSize: 20,
+                                color: 'black',
+                                marginLeft: 15,
+                                fontWeight: 'bold',
+                                color: 'gray'
+                            }}>Cài đặt</Text>
+                        </View>
+                    }
+                        containerStyle={{
+                            borderColor: 'transparent',
+                            shadowColor: 'transparent',
+                            shadowOffset: { width: 0, height: 0 },
+                            shadowOpacity: .0,
+                            shadowRadius: 0,
+                            elevation: 0
+                        }}
+                    >
+                        <Divider />
+                        <TouchableOpacity onPress = { () => { this._signOutAsync() }}>
+                            <View style={{ flex: 1, flexDirection: 'row', padding: 10, alignItems: "center" }}>
+                                <AntDesign name='logout' size={20} />
+                                <Text style={{ marginLeft: 10, fontSize: 18, color: 'black' }}>Đăng xuất</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </Card>
                 </ScrollView>
             )
         }
-        return(
-            <Text>Loading</Text>
+        return (
+            <View style = {{ alignItems: "center", justifyContent: 'center', flex: 1 }}>
+                <ActivityIndicator size="large" color="#00ff00"/>
+            </View>
         )
     }
 
     render() {
-        return(
-           <View>
-               {this._renderView()}
-           </View>
+        return (
+            <View>
+                {this._renderView()}
+            </View>
         )
     }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Button, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native';
+import { View, Text, Button, ScrollView, TouchableOpacity, Image, FlatList, ActivityIndicator } from 'react-native';
 import CardParam from '../components/CardParam';
 import ButtonIcon from '../components/ButtonIcon';
 import EatTable from '../components/EatTable';
@@ -179,9 +179,9 @@ class PatientScreen extends Component {
             )
         }
         return(
-            <Text>
-                loading
-            </Text>
+            <View style = {{ alignItems: "center", justifyContent: 'center', flex: 1 }}>
+                <ActivityIndicator size="large" color="#00ff00"/>
+            </View>
         )
     }
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
     ImageBackground, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View,
-    Dimensions, TouchableWithoutFeedback, Image, ScrollView
+    Dimensions, TouchableWithoutFeedback, Image, ScrollView, KeyboardAvoidingView
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -126,7 +126,7 @@ export default class LoginPage extends Component {
         return (
             <ImageBackground source={bgImage} style={styles.backgroundContainer} blurRadius={1}>
                 {/*<Text style={styles.welcome}>Welcome</Text>*/}
-                <ScrollView>
+                <KeyboardAvoidingView behavior="padding" enabled>
                     <View style={{ height: Dimensions.get('window').height - 30 }}>
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             <ImageBackground
@@ -200,7 +200,7 @@ export default class LoginPage extends Component {
                             </TouchableOpacity>
                         </View>
                     </View>
-                </ScrollView>
+                </KeyboardAvoidingView>
             </ImageBackground>
         );
     }

@@ -14,6 +14,7 @@ import AddAdvice from './screens/AddAdvice';
 import ChatScreen from './screens/ChatScreen';
 import LoginScreen from './screens/LoginScreen';
 import AuthLoadingScreen from './screens/AuthLoadingScreen';
+import SearchScreen from './screens/SearchScreen';
 import {YellowBox} from 'react-native';
 YellowBox.ignoreWarnings(['ViewPagerAndroid']);
 
@@ -135,6 +136,12 @@ const TabScreen = createStackNavigator({
       headerTintColor: 'white',
     }),
   },
+  SearchScreen: {
+    screen: SearchScreen,
+    navigationOptions: () => ({
+      header: null,
+    }),
+  }
 });
 
 const MainNavigator = createAppContainer(createSwitchNavigator({

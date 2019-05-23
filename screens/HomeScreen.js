@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux';
-import { View, ScrollView, Text, FlatList, ListView, TextInput, TouchableOpacity, Keyboard } from 'react-native';
+import { View, ScrollView, Text, FlatList, ListView, TextInput, TouchableOpacity, Keyboard, ActivityIndicator } from 'react-native';
 import CardPatient from '../components/CardPatient';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as actions from '../actions';
@@ -25,7 +25,6 @@ class HomeScreen extends Component {
     _bootstrapAsync = async () => {
         const userId = await AsyncStorage.getItem('UserId');
         //AsyncStorage.clear();
-        console.log(userId);
         axios(api + 'follows/list-doctor-following', {
             params: {
                 MaBacSi: userId
@@ -63,7 +62,8 @@ class HomeScreen extends Component {
     }
 
     _keyboardDidHide = () => {
-        this.setState({ textsearch: "", focus: false })
+        //this.setState({ textsearch: "", focus: false })
+        if (this.state.textsearch == "") this.setState({ focus: false });
     }
 
 
@@ -74,13 +74,9 @@ class HomeScreen extends Component {
 
     searchPatient = ({ text }) => {
         this.setState({ textsearch: text });
-        if (text === "") {
-            this.setState({ patients: [] });
-            return;
-        }
         let list = [...this.state.data];
         for (let i = 0; i < list.length; i++) {
-            if (list[i].name.indexOf(text) === -1) {
+            if (list[i].HoTen.indexOf(text) === -1) {
                 list.splice(i, 1);
                 i = i - 1;
             }
@@ -90,7 +86,7 @@ class HomeScreen extends Component {
 
     onInputFocus = ({ text }) => {
         this.setState({ focus: true });
-        this.searchPatient(text);
+        //this.searchPatient(text);
     }
 
     backClick = () => {
@@ -106,8 +102,10 @@ class HomeScreen extends Component {
                     <View style={{ flexDirection: 'row', marginBottom: 10, height: 60, borderBottomColor: '#EFEFEF', backgroundColor: 'rgba(54, 175, 160, 1)', alignItems: 'center' }}>
                         <View style={{ flexDirection: 'row', backgroundColor: 'white', flex: 1, borderRadius: 15, marginLeft: 5, marginRight: 5 }}>
                             <View style={{ justifyContent: 'center', paddingLeft: 10, paddingRight: 5 }}>
-                                {this.state.focus ? <TouchableOpacity onPress={this.backClick} >
-                                    <Icon name='arrow-circle-left' size={20} color='gray' />
+                                {(this.state.focus) ? <TouchableOpacity onPress={this.backClick} >
+                                    <View style={{ paddingRight: 10 }}>
+                                        <Icon name='arrow-circle-left' size={20} color='gray' />
+                                    </View>
                                 </TouchableOpacity> : <Icon name='search' size={20} color='gray' />}
                             </View>
                             <TextInput
@@ -118,7 +116,7 @@ class HomeScreen extends Component {
                                 onChangeText={(text) => this.searchPatient({ text })}
                             />
                         </View>
-                        {this.state.focus ? <Text></Text> : <TouchableOpacity>
+                        {this.state.focus ? <Text></Text> : <TouchableOpacity onPress = {() => this.props.navigation.navigate('SearchScreen')}>
                             <View style={{ paddingLeft: 10, paddingRight: 10 }}>
                                 <Icon name='user-plus' size={20} color='white' />
                             </View>
@@ -143,7 +141,9 @@ class HomeScreen extends Component {
             )
         }
         return (
-            <Text>loading</Text>
+            <View style = {{ alignItems: "center", justifyContent: 'center', flex: 1 }}>
+                <ActivityIndicator size="large" color="#00ff00"/>
+            </View>
         )
     }
 

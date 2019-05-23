@@ -15,6 +15,7 @@ import ChatScreen from './screens/ChatScreen';
 import LoginScreen from './screens/LoginScreen';
 import AuthLoadingScreen from './screens/AuthLoadingScreen';
 import SearchScreen from './screens/SearchScreen';
+import PatientProfile from './screens/PatientProfile';
 import {YellowBox} from 'react-native';
 YellowBox.ignoreWarnings(['ViewPagerAndroid']);
 
@@ -141,7 +142,16 @@ const TabScreen = createStackNavigator({
     navigationOptions: () => ({
       header: null,
     }),
-  }
+  },
+  PatientProfile: {
+    screen: PatientProfile,
+    navigationOptions: () => ({
+      headerStyle: {
+        backgroundColor: 'rgba(54, 175, 160, 1)',
+      },
+      headerTintColor: 'white',
+    }),
+  },
 });
 
 const MainNavigator = createAppContainer(createSwitchNavigator({

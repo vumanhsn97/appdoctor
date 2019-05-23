@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, TextInput, TouchableOpacity, Text, FlatList, ActivityIndicator, ScrollView } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, FlatList, ActivityIndicator, ScrollView, Keyboard } from 'react-native';
 import SearchCard from '../components/SearchCard';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
@@ -39,7 +39,7 @@ class SearchScreen extends Component {
     _renderPatients = () => {
        if (!this.state.loading) {
             return(
-                <ScrollView>
+                <ScrollView keyboardShouldPersistTaps='always'>
                      <FlatList
                         data={this.state.patients}
                         keyboardShouldPersistTaps='always'
@@ -47,7 +47,7 @@ class SearchScreen extends Component {
                         renderItem={({ item }) => <SearchCard
                             id={item.MaBenhNhan}
                             HoTen={item.HoTen}
-                            Avatar={item.Avatar}
+                            Avatar={'data:image/jpeg;base64,' + item.Avatar}
                             DiaChi={item.DiaChi}
                             navigation={this.props.navigation}
                         />}

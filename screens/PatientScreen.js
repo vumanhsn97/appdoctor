@@ -7,11 +7,43 @@ import AdviceCard from '../components/AdviceCard';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
+import AsyncStorage from '@react-native-community/async-storage';
+import axios from 'axios';
 
 class PatientScreen extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            loading: false,
+            birth: 0,
+        }
 
+        this._bootstrapAsync();
+    }
+
+    _bootstrapAsync = async () => {
+        const userId = this.props.navigation.getParam("id", "nope");
+        //AsyncStorage.clear();
+        //console.log(userId);
+        axios(api + 'follows/patient-following-by-doctor', {
+            params: {
+                MaBenhNhan: userId
+            }
+          }).then(response => {
+            let data = response.data;
+            let date = new Date()
+            date = date.getFullYear();
+            let birth = new Date(data.patient.NgaySinh);
+            birth = date - birth.getFullYear();
+            //console.log(birth);
+            if  (data.status == 'success') {
+                data = data.patient;
+                this.setState({ patient: data, loading: true, birth: birth});
+            }
+          })
+          .catch(error => {
+            console.log(error)
+          })
     }
 
     deleteAdvice = (key) => {
@@ -31,18 +63,19 @@ class PatientScreen extends Component {
 
     }
 
-    render() {
-        return (
-            <ScrollView>
-                <View style={{ justifyContent: 'center', flexDirection: 'column', height: 100, marginBottom: 10 }}>
+    _renderLayout = () => {
+        if (this.state.loading) {
+            return(
+                <View>
+                    <View style={{ justifyContent: 'center', flexDirection: 'column', height: 100, marginBottom: 10 }}>
                     <View style={{ flexDirection: 'row', paddingTop: 10, paddingBottom: 10 }}>
                         <View style={{ width: 80, height: 80, borderRadius: 80 / 2, justifyContent: 'space-between', margin: 5 }}>
-                            <Image source={{ uri: this.props.patient.avatar }} style={{ height: 80, width: 80, borderRadius: 80 / 2, }} />
+                            <Image source={{ uri: this.state.patient.Avatar }} style={{ height: 80, width: 80, borderRadius: 80 / 2, }} />
                         </View>
                         <View style={{ justifyContent: 'center', flex: 1 }}>
-                            <Text style={{ fontSize: 20, color: 'black' }}>{this.props.patient.name}</Text>
-                            <Text style={{ marginTop: 10, color: 'black' }}>{this.props.patient.age}</Text>
-                            <Text style={{ color: 'black' }}>{this.props.patient.address}</Text>
+                            <Text style={{ fontSize: 20, color: 'black' }}>{this.state.patient.HoTen}</Text>
+                            <Text style={{ marginTop: 10, color: 'black' }}>{this.state.birth + ' tuổi'}</Text>
+                            <Text style={{ color: 'black' }}>{this.state.patient.DiaChi}</Text>
                         </View>
                     </View>
                 </View>
@@ -51,7 +84,7 @@ class PatientScreen extends Component {
                         <CardParam
                             noti={true}
                             title='Đường huyết'
-                            value={this.props.patient.duonghuyet}
+                            value={this.state.patient.DuongHuyet + " mg/dl"} 
                             icon='tint'
                         />
                     </View>
@@ -59,7 +92,7 @@ class PatientScreen extends Component {
                         <CardParam
                             noti={true}
                             title='Huyết áp'
-                            value={this.props.patient.huyetap}
+                            value={this.state.patient.HuyetAp + ' mmHg'}
                             icon='stethoscope'
                         />
                     </View>
@@ -87,7 +120,7 @@ class PatientScreen extends Component {
                         <CardParam
                             noti={false}
                             title='Chiều cao'
-                            value={this.props.patient.chieucao}
+                            value={this.state.patient.ChieuCao + " m"}
                             icon='child'
                         />
                     </View>
@@ -95,7 +128,7 @@ class PatientScreen extends Component {
                         <CardParam
                             noti={false}
                             title='Cân nặng'
-                            value={this.props.patient.cannang}
+                            value={this.state.patient.CanNang + " kg"}
                             icon='weight'
                         />
                     </View>
@@ -114,7 +147,7 @@ class PatientScreen extends Component {
                             icon='phone-square'
                             label='Gọi điện'
                             screen=''
-                            phone={this.props.patient.id}
+                            phone={this.state.patient.MaBenhNhan}
                             navigation={this.props.navigation}
                         />
                     </View>
@@ -142,6 +175,20 @@ class PatientScreen extends Component {
                     />
                     <EatTable />
                 </View>
+                </View>
+            )
+        }
+        return(
+            <Text>
+                loading
+            </Text>
+        )
+    }
+
+    render() {
+        return (
+            <ScrollView>
+                {this._renderLayout()}
             </ScrollView>
         );
     }

@@ -14,6 +14,8 @@ import AddAdvice from './screens/AddAdvice';
 import ChatScreen from './screens/ChatScreen';
 import LoginScreen from './screens/LoginScreen';
 import AuthLoadingScreen from './screens/AuthLoadingScreen';
+import {YellowBox} from 'react-native';
+YellowBox.ignoreWarnings(['ViewPagerAndroid']);
 
 const LoginStack = createStackNavigator({
   LoginScreen: {

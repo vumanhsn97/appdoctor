@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {
     ImageBackground, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View,
-    Dimensions, TouchableWithoutFeedback, Image, ScrollView, KeyboardAvoidingView
+    Dimensions, TouchableWithoutFeedback, Image, ScrollView, KeyboardAvoidingView,
+    ActivityIndicator
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -22,6 +23,7 @@ export default class LoginPage extends Component {
             name: '',
             pass: '',
             errorMessage: '',
+            loading: false,
         };
 
     }
@@ -75,7 +77,7 @@ export default class LoginPage extends Component {
     }
 
     handleLogin = () => {
-        console.log('login');
+        this.setState({ loading: true })
         if (this.state.name === '')
             this.setState({ errorMessage: 'Vui lòng nhập "Số điện thoại" của bạn' })
         else if (this.state.pass === '')
@@ -99,6 +101,7 @@ export default class LoginPage extends Component {
                 });
             
         }
+        this.setState({ loading: false });
     }
 
     eyeHandleIn = () => {
@@ -109,22 +112,10 @@ export default class LoginPage extends Component {
         this.setState({ isHidePass: true })
     }
 
-    render() {
-        const errorMessage = this.state.errorMessage !== ''
-            ? <View style={{
-                marginTop: 10,
-                paddingLeft: 40,
-            }}>
-                <Text style={{
-                    color: 'red',
-                    fontSize: 16,
-                }}>
-                    {this.state.errorMessage}</Text>
-            </View>
-            : null
-
-        return (
-            <ImageBackground source={bgImage} style={styles.backgroundContainer} blurRadius={1}>
+    _renderLayout = () => {
+        if (!this.state.loading) {
+            return(
+                <ImageBackground source={bgImage} style={styles.backgroundContainer} blurRadius={1}>
                 {/*<Text style={styles.welcome}>Welcome</Text>*/}
                 <KeyboardAvoidingView behavior="padding" enabled>
                     <View style={{ height: Dimensions.get('window').height - 30 }}>
@@ -202,6 +193,33 @@ export default class LoginPage extends Component {
                     </View>
                 </KeyboardAvoidingView>
             </ImageBackground>
+            )
+        }
+        return(
+            <View style = {{ alignItems: "center", justifyContent: 'center', flex: 1 }}>
+                <ActivityIndicator size="large" color="#00ff00"/>
+            </View>
+        );
+    }
+
+    render() {
+        const errorMessage = this.state.errorMessage !== ''
+            ? <View style={{
+                marginTop: 10,
+                paddingLeft: 40,
+            }}>
+                <Text style={{
+                    color: 'red',
+                    fontSize: 16,
+                }}>
+                    {this.state.errorMessage}</Text>
+            </View>
+            : null
+
+        return (
+            <View>
+                {this._renderLayout()}
+            </View>
         );
     }
 }

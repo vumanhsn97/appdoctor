@@ -130,7 +130,7 @@ class HomeScreen extends Component {
                             id={item.MaBenhNhan}
                             noti={false}
                             name={item.HoTen}
-                            avatar={item.Avatar}
+                            avatar={'data:image/jpeg;base64,' + item.Avatar}
                             type='Tiểu đường'
                             highlight={false}
                             navigation={this.props.navigation}

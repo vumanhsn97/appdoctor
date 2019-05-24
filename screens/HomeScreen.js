@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux';
-import { View, ScrollView, Text, FlatList, ListView, TextInput, TouchableOpacity, Keyboard, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Text, FlatList, ListView, TextInput, TouchableOpacity, Keyboard, ActivityIndicator, YellowBox  } from 'react-native';
 import CardPatient from '../components/CardPatient';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as actions from '../actions';
 import api from '../services/config';
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
+
+YellowBox.ignoreWarnings([
+    'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
+]);
 
 class HomeScreen extends Component {
     constructor(props) {

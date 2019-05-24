@@ -16,6 +16,7 @@ class PatientScreen extends Component {
         this.state = {
             loading: false,
             birth: 0,
+            patient: {}
         }
 
         this._bootstrapAsync();
@@ -60,7 +61,6 @@ class PatientScreen extends Component {
 
     componentWillMount() {
         const id = this.props.navigation.getParam("id", "");
-
     }
 
     _renderLayout = () => {
@@ -137,9 +137,11 @@ class PatientScreen extends Component {
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 5, marginTop: 10 }}>
                             <View style={{ width: '49%' }}>
                                 <ButtonIcon
+                                    id={this.state.MaBacSi}
                                     icon='comments'
                                     label='Nhắn tin'
                                     screen='ChatScreen'
+                                    data={this.state.patient}
                                     navigation={this.props.navigation}
                                 />
                             </View>

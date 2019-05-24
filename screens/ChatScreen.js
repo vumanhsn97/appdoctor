@@ -1,11 +1,53 @@
 import React, { Component, PureComponent } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { StyleSheet, Text, View, chatMessage, TouchableOpacity, FlatList, Alert, AsyncStorage, YellowBox } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Avatar } from "react-native-elements";
 import { createAppContainer, createStackNavigator, StackActions, NavigationActions } from 'react-navigation';
-import {connect} from 'react-redux';
-import * as actions from '../actions';
+import socketIOClient from 'socket.io-client';
+import { TextInput } from 'react-native-gesture-handler';
+import ApiChat from '../services/api';
+import baseURL from '../services/config'
+
+const socket = socketIOClient(baseURL)
+
+YellowBox.ignoreWarnings([
+    'Warning: Async Storage has been extracted from react-native core'
+]);
+
+export class DateTime extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            currDate: '',
+            time: '',
+        }
+    }
+
+    componentDidMount() {
+        // Get current dd/MM/yyyy
+        let today = new Date(),
+            _date = today.getDate(),
+            _month = today.getMonth() + 1,
+            _year = today.getFullYear();
+        let _hr = today.getHours(),
+            _min = today.getMinutes();
+        this.setState({
+            currDate: _date + '-' + _month + '-' + _year,
+            time: _hr + ':' + _min,
+        });
+    }
+
+    render() {
+        return (
+            <View style={{ justifyContent: 'flex-end', paddingBottom: 7, paddingHorizontal: 10, }}>
+                <Text style={{ fontSize: 12, color: 'silver', }}>
+                    {this.state.time}
+                </Text>
+            </View>
+        )
+    }
+}
 
 export class RightListItems extends PureComponent {
     constructor(props) {
@@ -13,24 +55,20 @@ export class RightListItems extends PureComponent {
     }
 
     render() {
+        let _time = new Date(this.props.item.NgayGioGui);
+        // alert(this.props.item.NgayGioGui);
         return (
             <View style={{ flexDirection: 'row', alignSelf: 'flex-end', }}>
                 <View style={{ justifyContent: 'flex-end', paddingBottom: 7, paddingHorizontal: 10, }}>
                     <Text style={{ fontSize: 12, color: 'silver', }}>
-                        {this.props.item.time}
+                        {_time.getDate() + '/' + (_time.getMonth() + 1) + '-' + _time.getHours() + ':' + _time.getMinutes()}
                     </Text>
                 </View>
                 <View style={[styles.BubbleChat, styles.rightBubbleChat]}>
                     <Text style={{ paddingTop: 5, color: 'white', fontSize: 17 }}>
-                        {this.props.item.content}
+                        {this.props.item.NoiDung}
                     </Text>
                 </View>
-                {/* <Avatar
-                size="medium"
-                rounded
-                source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqUifDeYJGapfmg23wf6fEGWG9EHJwYdFRyM-dSTr1PANe6Be9Vg'}}
-                activeOpacity={0.7}
-              /> */}
             </View>
         )
     }
@@ -42,22 +80,23 @@ export class LeftListItems extends PureComponent {
     }
 
     render() {
+        let _time = new Date(this.props.item.NgayGioGui);
         return (
             <View style={{ flexDirection: 'row', alignSelf: 'flex-start', }}>
                 <Avatar
                     size="medium"
                     rounded
-                    source={{ uri: this.props.avatar }}
+                    source={{ uri: 'data:image/jpeg;base64,' + this.props.avatar }}
                     activeOpacity={0.7}
                 />
                 <View style={[styles.BubbleChat, styles.leftBubbleChat]}>
                     <Text style={{ paddingTop: 5, color: 'black', fontSize: 17 }}>
-                        {this.props.item.content}
+                        {this.props.item.NoiDung}
                     </Text>
                 </View>
                 <View style={{ justifyContent: 'flex-end', paddingBottom: 7, paddingHorizontal: 10, }}>
                     <Text style={{ fontSize: 12, color: 'silver', }}>
-                        {this.props.item.time}
+                        {_time.getDate() + '/' + (_time.getMonth() + 1) + '-' + _time.getHours() + ':' + _time.getMinutes()}
                     </Text>
                 </View>
             </View>
@@ -65,15 +104,21 @@ export class LeftListItems extends PureComponent {
     }
 }
 
-class ChatScreen extends Component {
+export default class ChatScreen extends Component {
+    _isMounted = false;
 
     constructor(props) {
         super(props);
         this.state = {
-            textInput: '',
-            items: [],
-            // date: [],
+            myID: '',
+            receiverID: this.props.navigation.getParam('data').MaBenhNhan,
+            txtInput: '',
+            chatMessage: '',
+            chatMessages: [],
+            page: 1
         };
+
+        this.apiChat = ApiChat();
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -81,7 +126,7 @@ class ChatScreen extends Component {
             title: navigation.getParam('title'),
             headerTitleStyle: {
                 fontWeight: 'bold',
-                // color: 'white',
+                // color: 'white', người gửi
             },
             headerStyle: {
                 backgroundColor: 'rgba(74, 195, 180, 1)',
@@ -90,27 +135,89 @@ class ChatScreen extends Component {
         };
     };
 
+    async componentDidMount() {
+        this._isMounted = true;
 
-    AddItemsToArray = () => {
-        let mess = [{ content: 'reply: ' + this.state.textInput.toString(), type: 2, key: (this.state.items.length + 1).toString() }]
-        mess.push({ content: this.state.textInput.toString(), type: 1, key: this.state.items.length.toString() });
+        const userId = await AsyncStorage.getItem('UserId');
+        this.setState({
+            myID: userId
+        });
+        socket.emit('join room', {
+            MaTaiKhoan: userId,
+            LoaiTaiKhoan: 2,
+        });
+        this.apiChat.getMessages(
+            { id: this.state.myID, type: 2 },
+            { id: this.state.receiverID, type: 1 },
+            this.state.page
+        ).then((msg) => {
+            let dataTemp = []
+            if (msg !== null && this._isMounted) {
+                // alert(JSON.parse(JSON.stringify(msg)))   
+                msg.map((item) => {
+                    // alert(JSON.stringify(item))
+                    let date = new Date(item.NgayGioGui)
+                    let temp = {
+                        MaNguoiGui: item.MaNguoiGui,
+                        LoaiNguoiGui: item.LoaiNguoiGui,
+                        MaNguoiNhan: item.MaNguoiNhan,
+                        LoaiNguoiNhan: item.LoaiNguoiNhan,
+                        NoiDung: item.NoiDung,
+                        NgayGioGui: date,
+                    }
 
-        if (this.state.textInput !== '') {
-            //Adding Items To Array.
+                    dataTemp.push(temp)
+                })
+            }
             this.setState({
-                items: [...mess, ...this.state.items],
-                textInput: '',
-                // date: [...this.state.date, ...{ _currday: this.props.currDate, _time: this.props.time }],
-            });
-        }
+                chatMessages: [...this.state.chatMessages, ...dataTemp]
+            }, () => { });
+        })
+
+        socket.on('chat message', (msg) => {
+            if (msg !== null) {
+                msg.NgayGioGui = msg.DateValue
+                this.setState({
+                    chatMessages: [msg, ...this.state.chatMessages]
+                });
+            }
+        });
     }
 
-    _renderItem = (item) => {
-        if (item.type === 1) {
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    async submitChatMessage() {
+        let today = new Date();
+        let _today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        Alert.alert(this.state.receiverID)
+
+        this.setState({
+            chatMessage: {
+                MaNguoiGui: this.state.myID,
+                LoaiNguoiGui: 2,
+                MaNguoiNhan: this.state.receiverID,//ừa
+                LoaiNguoiNhan: 1,// 
+                NoiDung: this.state.txtInput,
+                NgayGioGui: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + ' ' + today.getHours() + ':' + today.getMinutes(),
+                DateValue: today,
+            },
+            txtInput: '',
+        }, async () => {
+            await socket.emit('chat message', this.state.chatMessage);
+        });
+    }
+
+    keyExtractor = (item, index) => index.toString()
+
+    _renderItem = ({ item }) => {
+        // alert(JSON.stringify(item))
+        if (item.MaNguoiGui === this.state.myID) {
             return (<RightListItems item={item} />);
         }
         else {
-            return (<LeftListItems item={item} />); //avatar={this.props.navigation.getParam('data').Avatar}/>);
+            return (<LeftListItems item={item} avatar={this.props.navigation.getParam('data').Avatar} />);
         }
     }
 
@@ -119,20 +226,21 @@ class ChatScreen extends Component {
             <View style={styles.wrapper}>
                 <FlatList
                     contentContainerStyle={{ paddingVertical: 20 }}
-                    data={this.props.chat}
-                    renderItem={({ item }) => this._renderItem(item)}
+                    data={this.state.chatMessages}
+                    renderItem={this._renderItem}
+                    keyExtractor={this.keyExtractor}
                     inverted
                 >
                 </FlatList>
                 <View style={[{ flexDirection: 'row' }, styles.customChat]}>
                     <TextInput
                         placeholder="Nhập tin nhắn..."
-                        onChangeText={(textInput) => this.setState({ textInput })}
-                        value={this.state.textInput}
+                        onChangeText={(txtInput) => this.setState({ txtInput })}
+                        value={this.state.txtInput}
                         style={[styles.chatBox]}
                     />
                     <TouchableOpacity
-                        onPress={this.AddItemsToArray}
+                        onPress={() => { this.submitChatMessage() }}
                         style={[styles.chatBtn]}
                     >
                         <Icon name="md-send" size={35} color="#1084ff" />
@@ -198,10 +306,3 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',//white
     },
 });
-
-const mapStateToProps = state => ({
-    chat: state.chat,
-    patient: state.patient
-})
-
-export default connect(mapStateToProps, actions)(ChatScreen);

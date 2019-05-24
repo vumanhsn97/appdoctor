@@ -114,6 +114,18 @@ export default class LoginPage extends Component {
 
     _renderLayout = () => {
         if (!this.state.loading) {
+            const errorMessage = this.state.errorMessage !== ''
+            ? <View style={{
+                marginTop: 10,
+                paddingLeft: 40,
+            }}>
+                <Text style={{
+                    color: 'red',
+                    fontSize: 16,
+                }}>
+                    {this.state.errorMessage}</Text>
+            </View>
+            : null
             return(
                 <ImageBackground source={bgImage} style={styles.backgroundContainer} blurRadius={1}>
                 {/*<Text style={styles.welcome}>Welcome</Text>*/}
@@ -203,21 +215,10 @@ export default class LoginPage extends Component {
     }
 
     render() {
-        const errorMessage = this.state.errorMessage !== ''
-            ? <View style={{
-                marginTop: 10,
-                paddingLeft: 40,
-            }}>
-                <Text style={{
-                    color: 'red',
-                    fontSize: 16,
-                }}>
-                    {this.state.errorMessage}</Text>
-            </View>
-            : null
+        
 
         return (
-            <View>
+            <View style={{ flex: 1 }}>
                 {this._renderLayout()}
             </View>
         );

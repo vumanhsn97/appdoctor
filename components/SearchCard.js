@@ -14,9 +14,9 @@ class SearchCard extends Component {
                         borderRadius: 40 / 2,
                         justifyContent: 'flex-start'
                     }} source={{ uri: this.props.Avatar }}></Image>
-                    <View style={{ flex: 1 }}>
-                        <Text>{this.props.HoTen}</Text>
-                        <Text>{this.props.DiaChi}</Text>
+                    <View style={{ flex: 1, marginLeft: 10 }}>
+                        <Text style={{ color: 'black', marginBottom:  3}}>{this.props.HoTen}</Text>
+                        <Text>{(this.props.DiaChi == '' || this.props.DiaChi == null) ? 'Chưa có thông tin' : this.props.DiaChi}</Text>
                     </View>
                 </View>
             </TouchableOpacity>

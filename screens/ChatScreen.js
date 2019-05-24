@@ -191,7 +191,7 @@ export default class ChatScreen extends Component {
     async submitChatMessage() {
         let today = new Date();
         let _today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-        Alert.alert(this.state.receiverID)
+        //Alert.alert(this.state.receiverID)
 
         this.setState({
             chatMessage: {

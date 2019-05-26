@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Image, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, ScrollView, Image, Text, ActivityIndicator, TouchableOpacity, Linking } from 'react-native';
 import { Divider } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
@@ -12,8 +12,8 @@ class InforCard extends Component {
     render() {
         return (
             <View style={{ padding: 10 }}>
-                <Text style={{ fontSize: 20 }}>{this.props.label}</Text>
-                <Text>{this.props.detail}</Text>
+                <Text style={{ fontSize: 20, color: 'black' }}>{this.props.detail}</Text>
+                <Text>{this.props.label}</Text>
             </View>
         )
     }
@@ -26,12 +26,13 @@ class PatientProfile extends Component {
         this.state = {
             loading: true,
             follow: '',
+            type: ''
         }
 
         //this._bootstrapAsync();
     }
 
-    componentDidMount  = async() =>  {
+    componentDidMount = async () => {
         this.setState({ loading: true });
         const id = this.props.navigation.getParam('id', 'nope');
         const userId = await AsyncStorage.getItem('UserId');
@@ -41,11 +42,36 @@ class PatientProfile extends Component {
                 MaBacSi: userId
             }
         }).then(response => {
-            console.log(response.data.typeRelationship);
-            this.setState({ follow: response.data.typeRelationship })
+            //console.log(response.data.typeRelationship);
+            var d;
+            switch(response.data.typeRelationship) {
+                case 'followed':
+                    d = 'Hủy theo dõi'
+                    break;
+                case 'add':
+                    d = 'Theo dõi'
+                    break;
+                case 'accept':
+                    d = 'Đồng ý theo dõi'
+                    break;
+                case 'cancel':
+                    d = 'Hủy yêu cầu'
+            }
+            this.setState({ follow: d, type: response.data.typeRelationship })
         }).catch(error => {
             console.log(error)
         })
+        axios.get(api + 'doctors/find-doctor-by-id', {
+            params: {
+                MaBacSi: userId
+            }
+        }).then(response => {
+            this.setState({ doctor: response.data.doctor[0] });
+            console.log(response.data);
+        }).catch(error => {
+            console.log(error)
+        })
+
         axios.get(api + 'patients/find-patient-by-id', {
             params: {
                 MaBenhNhan: id
@@ -71,70 +97,68 @@ class PatientProfile extends Component {
     };
 
     handleClick = async () => {
-        
+
         const userId = await AsyncStorage.getItem('UserId');
         socket.emit("join room", {
             LoaiTaiKhoan: 2,
-            MaTaiKhoan: this.state.data.MaBenhNhan
+            MaTaiKhoan: userId
         })
-        if (this.state.follow == 'add') {
+        if (this.state.type == 'add') {
             axios.post(api + 'follows/wait', {
                 NguoiTheoDoi: userId,
                 NguoiBiTheoDoi: this.state.data.MaBenhNhan,
                 Type: 2
             }).then(response => {
-                console.log('hello');
-                this.setState({ follow: 'cancel' })
+                //console.log('hello');
+                this.setState({ follow: 'Hủy yêu cầu', type: 'cancel' })
             }).catch(error => {
                 console.log(error)
             })
             socket.emit("create notifications", {
-                MaTaiKhoan: userId,
-                LoaiNguoiChinh: 2,
-                MaTaiKhoanLienQuan: this.state.data.MaBenhNhan,
-                LoaiNguoiLienQuan: 1,
-                TenNguoiLienQuan: this.state.data.HoTen,
-                AvatarNguoiLienQuan: this.state.data.Avatar,
-                LoaiThongBao: 1,
-                LoaiTaiKhoan: 2
+                MaTaiKhoan: this.state.data.MaBenhNhan,
+                LoaiNguoiChinh: 1,
+                MaTaiKhoanLienQuan: this.state.doctor.MaBacSi,
+                LoaiNguoiLienQuan: 2,
+                TenNguoiLienQuan: this.state.doctor.HoTen,
+                AvatarNguoiLienQuan: this.state.doctor.Avatar,
+                LoaiThongBao: 1
             });
         }
-        if (this.state.follow == 'accept') {
+        if (this.state.type == 'accept') {
             axios.post(api + 'follows/followed', {
                 NguoiTheoDoi: userId,
                 NguoiBiTheoDoi: this.state.data.MaBenhNhan,
                 Type: 2
             }).then(response => {
-                console.log('hello');
-                this.setState({ follow: 'followed' })
+                //console.log('hello');
+                this.setState({ follow: 'Hủy theo dõi', type: 'followed' })
             }).catch(error => {
                 console.log(error)
             })
             socket.emit("create notifications", {
-                MaTaiKhoan: userId,
-                LoaiNguoiChinh: 2,
-                MaTaiKhoanLienQuan: this.state.data.MaBenhNhan,
-                LoaiNguoiLienQuan: 1,
-                TenNguoiLienQuan: this.state.data.HoTen,
-                AvatarNguoiLienQuan: this.state.data.Avatar,
-                LoaiThongBao: 1,
-                LoaiTaiKhoan: 2
+                MaTaiKhoan: this.state.data.MaBenhNhan,
+                LoaiNguoiChinh: 1,
+                MaTaiKhoanLienQuan: this.state.doctor.MaBacSi,
+                LoaiNguoiLienQuan: 2,
+                TenNguoiLienQuan: this.state.doctor.HoTen,
+                AvatarNguoiLienQuan: this.state.doctor.Avatar,
+                LoaiThongBao: 3
             });
         }
 
-        if (this.state.follow == 'followed' || this.state.follow == 'cancel') {
+        if (this.state.type == 'followed' || this.state.type == 'cancel') {
             axios.post(api + 'follows/unfollowed', {
                 NguoiTheoDoi: userId,
                 NguoiBiTheoDoi: this.state.data.MaBenhNhan,
                 Type: 2
             }).then(response => {
-                console.log('hello');
-                this.setState({ follow: 'add' })
+                //console.log('hello');
+                this.setState({ follow: 'Theo dõi', type: 'add' })
             }).catch(error => {
                 console.log(error)
             })
         }
-        
+
         socket.on("update list notifications", function (data) {
             console.log(data);
         })
@@ -154,12 +178,39 @@ class PatientProfile extends Component {
                         >
                         </Image>
                         <View style={{ flex: 1 }}>
-                            <Text style={{ marginBottom: 15, fontSize: 20, paddingLeft: 20 }}>{this.state.data.HoTen}</Text>
-                            <TouchableOpacity onPress={() => this.handleClick()}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
-                                    <Text style={{ marginLeft: 5, fontSize: 16 }}>{this.state.follow}</Text>
+                            <Text style={{ marginBottom: 15, fontSize: 20, paddingLeft: 20, color: 'black' }}>{this.state.data.HoTen}</Text>
+                            <View style={{ flexDirection: 'row' }}>
+                                <View style={{ flex: 1 }}>
+                                    <TouchableOpacity onPress={() => Linking.openURL(`tel:${this.state.data.MaBenhNhan}`)}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
+                                            <Icon name='phone' size={20} />
+                                            <Text style={{ marginLeft: 5, fontSize: 16 }}>Gọi điện</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => this.handleClick()}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20, marginTop: 10 }}>
+                                            <Icon name='eye' size={20} />
+                                            <Text style={{ marginLeft: 5, fontSize: 16 }}>{this.state.follow}</Text>
+                                        </View>
+                                    </TouchableOpacity>
                                 </View>
-                            </TouchableOpacity>
+                                <View>
+                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('ChatScreen', { data: this.state.data })}>
+
+                                        <View style={{ flexDirection: 'row', paddingLeft: 20 }}>
+                                            <Icon name='comment-dots' size={20} />
+                                            <Text style={{ marginLeft: 5, fontSize: 16 }}>Nhắn tin</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                    {(this.state.follow == 'followed' ? <TouchableOpacity onPress={() => this.props.navigation.navigate('RelativeStas', { data: this.state.data })}>
+
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20, marginTop: 10 }}>
+                                            <Icon name='file-contract' size={20} />
+                                            <Text style={{ marginLeft: 5, fontSize: 16 }}>Xem chỉ số</Text>
+                                        </View>
+                                    </TouchableOpacity> : <Text></Text>)}
+                                </View>
+                            </View>
                         </View>
                     </View>
                     <View style={{ flexDirection: 'row', padding: 10 }}>

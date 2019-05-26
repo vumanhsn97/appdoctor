@@ -16,6 +16,7 @@ import LoginScreen from './screens/LoginScreen';
 import AuthLoadingScreen from './screens/AuthLoadingScreen';
 import SearchScreen from './screens/SearchScreen';
 import PatientProfile from './screens/PatientProfile';
+import RelativeStas from './screens/RelativeStas';
 import { YellowBox } from 'react-native';
 import api from './services/config';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -181,6 +182,12 @@ const TabScreen = createStackNavigator({
         backgroundColor: 'rgba(54, 175, 160, 1)',
       },
       headerTintColor: 'white',
+    }),
+  },
+  RelativeStas: {
+    screen: RelativeStas,
+    navigationOptions: () => ({
+      header: null,
     }),
   },
 });

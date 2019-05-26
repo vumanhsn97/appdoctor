@@ -12,7 +12,28 @@ export default () => {
                     }
                     return null
                 })
-        }
+        },
+        getHealthValue: (info) => {
+            return axiosGet(baseURL + `statistics?MaBenhNhan=${info.MaBenhNhan}&Loai=${info.Loai}`)
+                .then((res) => {
+                    if (res.data.status === 'success') {
+                        if (info.Loai === 1)
+                            return res.data.blood_sugar
+                        else if (info.Loai === 2)
+                            return res.data.blood_pressure
+                    }
+                    return null
+                })
+        },
+        getTodayMeal: (info) => {
+            return axiosGet(baseURL + `meals/todayMeal?MaBenhNhan=${info.MaBenhNhan}`)
+                .then((res) => {
+                    if (res.data.status === 'success') {
+                        return res.data
+                    }
+                    return null
+                })
+        },
     }
     return services
 }

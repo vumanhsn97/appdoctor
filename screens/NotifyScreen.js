@@ -26,7 +26,7 @@ class NotiCard extends Component {
             }).then(response => {
                 let data = response.data;
                 if (data.status == 'success') {
-                   
+
                 }
             })
                 .catch(error => {
@@ -34,16 +34,17 @@ class NotiCard extends Component {
                 })
         }
         this.setState({ highlight: false });
+        this.props.navigation.navigate('PatientProfile', {id: this.props.data.MaTaiKhoanChinh})
     }
 
     render() {
         return (
             <TouchableOpacity onPress={() => this.onHandleClick()}>
                 <View style={{ padding: 10, flexDirection: 'row', backgroundColor: this.state.highlight ? '#EFEFEF' : 'white' }}>
-                    <Image source={{ uri: this.state.avatar }} style={{ width: 40, height: 40, borderRadius: 60 / 2 }} />
+                    <Image source={{ uri: this.props.data.AvatarNguoiLienQuan }} style={{ width: 40, height: 40, borderRadius: 60 / 2 }} />
                     <Text style={{ flex: 1, marginLeft: 10, fontSize: 14 }}>
                         <Text style={{ color: 'black' }}>{this.props.data.TenNguoiLienQuan}</Text>
-                        <Text> đã yêu cầu được bạn theo dõi</Text>
+                        <Text>{this.props.data.LoaiThongBao}</Text>
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -63,12 +64,12 @@ class NotifyScreen extends Component {
     }
 
     componentDidMount() {
-        
+
     }
 
     _bootstrapAsync = async () => {
         const userId = await AsyncStorage.getItem('UserId');
-        socket.on('update list notifications', function(info){
+        socket.on('update list notifications', function (info) {
             e.setState({ notifications: [info, ...e.state.notifications], loading: false });
         })
         socket.emit("join room", {
@@ -101,6 +102,7 @@ class NotifyScreen extends Component {
                 keyExtractor={e => e.MaBenhNhan}
                 renderItem={({ item }) => <NotiCard
                     data={item}
+                    navigation={this.props.navigation}
                 />}
             />)
         }
@@ -109,6 +111,14 @@ class NotifyScreen extends Component {
     render() {
         return (
             <View>
+                <View style={{ flexDirection: 'row', marginBottom: 10, height: 60, borderBottomColor: '#EFEFEF', backgroundColor: 'rgba(54, 175, 160, 1)', alignItems: 'center' }}>
+                    <View style={{ flex: 1, marginLeft: 5, marginRight: 5, alignItems: 'center' }}>
+                        <Text style={{ fontSize: 20, color: 'white' }}>Thông báo</Text>
+                    </View>
+                </View>
+                {(this.state.notifications.length < 1) ? <View style={{ alignItems: 'center' }}>
+                    <Text>Chưa có thông báo</Text>
+                </View> : <Text></Text>}
                 {this._renderLayout()}
             </View>
         );

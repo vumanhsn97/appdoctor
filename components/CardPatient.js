@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 class CardPatient extends Component {
 
     onPressPatient = (id) => {
-        this.props.navigation.navigate('PatientScreen', { id: id });
+        this.props.navigation.navigate('PatientProfile', { id: id });
         this.props.unHighLightPatients(id);
     }
 

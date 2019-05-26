@@ -17,6 +17,7 @@ class SearchScreen extends Component {
 
     _searchPatient = (text) => {
         this.setState({ loading: true, fail: '' });
+        if (text.length < 1) return;
         axios(api + 'patients/find-patient-by-id', {
             params: {
                 MaBenhNhan: text
@@ -24,7 +25,7 @@ class SearchScreen extends Component {
           }).then(response => {
             let data = response.data;
             if  (data.status == 'success') {
-                this.setState({ patients: data.patient })
+                this.setState({ fail: 'Số bệnh nhân tìm thấy: ' + data.patient.length + ' người', patients: data.patient })
                 
             } else {
                 this.setState({ fail: 'Không tìm thấy bệnh nhân nào', patients: []})
@@ -70,7 +71,7 @@ class SearchScreen extends Component {
                             <Icon name = "arrow-left" size={20} color='white'/>
                         </View>
                     </TouchableOpacity>
-                    <TextInput style={{ height: 40, width: "100%", fontSize: 16 }} 
+                    <TextInput style={{ height: 30, padding: 0, paddingLeft: 5, paddingRight: 5, flex: 1, fontSize: 16, backgroundColor: 'white', marginRight: 20 }} 
                         onChangeText = {(text) => this._searchPatient(text)}
                         autoFocus={true}
                         keyboardType='default'

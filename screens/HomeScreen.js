@@ -20,7 +20,8 @@ class HomeScreen extends Component {
             patients: [],
             focus: false,
             textsearch: "",
-            loading: false
+            loading: false,
+            no: ''
         }
 
         this._bootstrapAsync();
@@ -37,15 +38,19 @@ class HomeScreen extends Component {
             let data = response.data;
             if  (data.status == 'success') {
                 data = data.list_patients;
-                this.setState({ patients: data, data: data, loading: true});
+                this.setState({ patients: data, data: data});
             } else {
-                AsyncStorage.clear();
-                this.props.navigation.navigate('LoginStack');
+                //AsyncStorage.clear();
+            //this.props.navigation.navigate('LoginStack');
+                this.setState({no: 'Không có bệnh nhân nào được theo dõi'});
             }
           })
           .catch(error => {
+            AsyncStorage.clear();
+            this.props.navigation.navigate('LoginStack');
             console.log(error)
           })
+          this.setState({ loading: true })
     }
 
 
@@ -108,14 +113,16 @@ class HomeScreen extends Component {
                 <View>
                     <View style={{ flexDirection: 'row', marginBottom: 10, height: 60, borderBottomColor: '#EFEFEF', backgroundColor: 'rgba(54, 175, 160, 1)', alignItems: 'center' }}>
                         <View style={{ flex: 1, marginLeft: 5, marginRight: 5, alignItems: 'center' }}>
-                           
+                           <Text style={{ fontSize: 20, color: 'white' }}>Danh sách bệnh nhân</Text>
                         </View>
                         <TouchableOpacity onPress = {() => this.props.navigation.navigate('SearchScreen')}>
-                            <View style={{ paddingLeft: 10, paddingRight: 10, flexDirection: 'row' }}>
-                                <Text style={{ marginRight: 2, color: 'white', fontSize: 16 }}>Tìm kiếm</Text>
-                                
+                            <View style={{ width: 30 }}>
+                                <Icon name='search' size={15} color='white' />
                             </View>
                         </TouchableOpacity>
+                    </View>
+                    <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                        <Text style={{ color: 'black' }}>{this.state.no}</Text>
                     </View>
                     <FlatList
                         data={this.state.patients}

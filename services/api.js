@@ -13,7 +13,6 @@ export default () => {
                     return null
                 })
         },
-<<<<<<< HEAD
         getHealthValue: (info) => {
             return axiosGet(baseURL + `statistics?MaBenhNhan=${info.MaBenhNhan}&Loai=${info.Loai}`)
                 .then((res) => {
@@ -35,7 +34,6 @@ export default () => {
                     return null
                 })
         },
-=======
 
         getBacSiInfo: (info) => {
             return axiosGet(baseURL + `doctors/find-doctor-by-id?MaBacSi=${info.MaBacSi}`)
@@ -61,7 +59,6 @@ export default () => {
                     return null
                 })
         }
->>>>>>> 7ac9c75e6534be475e1761a5d030871a2809db6c
     }
     return services
 }

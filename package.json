@@ -11,11 +11,8 @@
     "axios": "^0.18.0",
     "react": "16.8.3",
     "react-native": "0.59.8",
-<<<<<<< HEAD
     "react-native-chart-kit": "^2.6.1",
-=======
     "react-native-awesome-alerts": "^1.2.0",
->>>>>>> 7ac9c75e6534be475e1761a5d030871a2809db6c
     "react-native-elements": "^1.1.0",
     "react-native-facebook-account-kit": "^1.1.0",
     "react-native-gesture-handler": "^1.2.1",

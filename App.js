@@ -16,11 +16,8 @@ import LoginScreen from './screens/LoginScreen';
 import AuthLoadingScreen from './screens/AuthLoadingScreen';
 import SearchScreen from './screens/SearchScreen';
 import PatientProfile from './screens/PatientProfile';
-<<<<<<< HEAD
 import RelativeStas from './screens/RelativeStas';
-=======
 import RegisterInformationPage from './screens/RegisterInformationPage';
->>>>>>> 7ac9c75e6534be475e1761a5d030871a2809db6c
 import { YellowBox } from 'react-native';
 import api from './services/config';
 import AsyncStorage from '@react-native-community/async-storage';

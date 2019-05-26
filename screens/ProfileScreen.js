@@ -123,11 +123,11 @@ class ProfileScreen extends Component {
                             fontSize: 28,
                             color: "#696969",
                             fontWeight: '600',
-                        }}>{this.props.profile.HoTen}</Text>
+                        }}>{this.state.profile.HoTen}</Text>
                         <Text style={{
                             fontSize: 16,
                             color: "#00BFFF",
-                        }}>{this.props.profile.MaBacSi}</Text>
+                        }}>{this.state.profile.MaBacSi}</Text>
                     </View>
                     <Card title={
                         <View style={{
@@ -158,25 +158,33 @@ class ProfileScreen extends Component {
                             type='text'
                             label='Chứng minh nhân dân'
                             keyname='cmnd'
-                            title={this.props.profile.CMND}
+                            title={this.state.profile.CMND ? this.state.profile.CMND : 'Chưa có dữ liệu'}
                             settingLabel='Nhập CMND'
-                            settingDetail={this.props.profile.CMND}
+                            settingDetail={this.state.profile.CMND ? this.state.profile.CMND : 'Chưa có dữ liệu'}
                         />
                         <CardItemProfile
                             type='gender'
                             label='Giới tính'
                             keyname='gender'
-                            title={(this.props.profile.GioiTinh == null) ? 'Nữ' : 'Nam'}
+                            title={(this.state.profile.GioiTinh == null) ? 'Nữ' : 'Nam'}
                             settingLabel='Chọn giới tính'
-                            settingDetail={(this.props.profile.GioiTinh == null) ? false : true}
+                            settingDetail={(this.state.profile.GioiTinh == null) ? false : true}
                         />
                         <CardItemProfile
                             type='text'
                             label='Bệnh viện'
                             keyname='hospital'
-                            title={this.props.profile.BenhVien}
+                            title={this.state.profile.BenhVien ? this.state.profile.BenhVien : 'Chưa có dữ liệu'}
                             settingLabel='Nhập tên bệnh viện'
-                            settingDetail={this.props.profile.BenhVien}
+                            settingDetail={this.state.profile.BenhVien ? this.state.profile.BenhVien : 'Chưa có dữ liệu'}
+                        />
+                        <CardItemProfile
+                            type='speciality'
+                            label='Chuyên môn'
+                            keyname='speciality'
+                            title={this.state.profile.ChuyenMon ? this.state.profile.ChuyenMon : 'Chưa có dữ liệu'}
+                            settingLabel='Chọn chuyên môn'
+                            settingDetail={this.state.profile.ChuyenMon ? this.state.profile.ChuyenMon : 'Chưa có dữ liệu'}
                         />
                     </Card>
 
@@ -210,9 +218,9 @@ class ProfileScreen extends Component {
                             type='text'
                             label='Email'
                             keyname='email'
-                            title={this.props.profile.Email}
+                            title={this.state.profile.Email ? this.state.profile.Email : 'Chưa có dữ liệu'}
                             settingLabel='Nhập email'
-                            settingDetail={this.props.profile.Email}
+                            settingDetail={this.state.profile.Email ? this.state.profile.Email : 'Chưa có dữ liệu'}
                         />
                     </Card>
 

@@ -287,7 +287,11 @@ export default class RegisterInformationPage extends Component {
         Password:this.state.passValue,
         ChuyenMon:majors.toString()
       }
-      alert(JSON.stringify(doctor))
+      this.apiService.register(doctor).then(res => {
+        this.setState({ showAlert: true})
+      }).catch(err => {
+        alert(JSON.stringify(err))
+      })
     }
   }
 
@@ -296,13 +300,9 @@ export default class RegisterInformationPage extends Component {
       showAlert: false,
     }, async () => {
 
-      //Đổi mật khẩu thành công thì login vào hệ thống luôn chứ không cần 
       await AsyncStorage.setItem('UserId', this.state.userId)
-      // this.props.screenProps.socket.emit('register socket', {
-      //     id: data.MaBenhNhan,
-      //     loai: 1,
-      //   });
       this.props.navigation.navigate('AppStack')
+      AsyncStorage.setItem('Password', this.state.passValue);
     });
   }
 

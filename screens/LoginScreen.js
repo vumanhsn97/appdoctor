@@ -64,16 +64,22 @@ export default class LoginPage extends Component {
     }
 
     loginWithPhone = () => {
-        RNAccountKit.loginWithPhone()
-            .then(async (token) => {
-                if (!token) {
-                    console.log('Xác thực sai')
-                } else {
-                    let acc = await this.sendRequestForPhoneNumber(token.code);
-                    console.log(acc);
-                    this.props.navigation.navigate('RegisterInformationPage', { acc: acc })
-                }
-            })
+        // RNAccountKit.loginWithPhone()
+        //     .then(async (token) => {
+        //         if (!token) {
+        //             console.log('Xác thực sai')
+        //         } else {
+        //             let acc = await this.sendRequestForPhoneNumber(token.code);
+        //             console.log(acc);
+        //             this.props.navigation.navigate('RegisterInformationPage', { acc: acc })
+        //         }
+        //     })
+        this.props.navigation.navigate('RegisterInformationPage', {acc:{
+            phone:{
+                national_number:'0975206769'
+            }
+        }})
+
     }
 
     handleLogin = () => {
@@ -93,13 +99,13 @@ export default class LoginPage extends Component {
                         AsyncStorage.setItem('Password', this.state.pass);
                         this.props.navigation.navigate('AppStack');
                     } else {
-                        this.setState({errorMessage: 'Tên tài khoản hoặc mật khẩu không đúng.\nVui lòng thử lại.'})
+                        this.setState({ errorMessage: 'Tên tài khoản hoặc mật khẩu không đúng.\nVui lòng thử lại.' })
                     }
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
-            
+
         }
         this.setState({ loading: false });
     }
@@ -115,107 +121,110 @@ export default class LoginPage extends Component {
     _renderLayout = () => {
         if (!this.state.loading) {
             const errorMessage = this.state.errorMessage !== ''
-            ? <View style={{
-                marginTop: 10,
-                paddingLeft: 40,
-            }}>
-                <Text style={{
-                    color: 'red',
-                    fontSize: 16,
+                ? <View style={{
+                    marginTop: 10,
+                    paddingLeft: 40,
                 }}>
-                    {this.state.errorMessage}</Text>
-            </View>
-            : null
-            return(
+                    <Text style={{
+                        color: 'red',
+                        fontSize: 16,
+                    }}>
+                        {this.state.errorMessage}</Text>
+                </View>
+                : null
+            return (
                 <ImageBackground source={bgImage} style={styles.backgroundContainer} blurRadius={1}>
-                {/*<Text style={styles.welcome}>Welcome</Text>*/}
-                <KeyboardAvoidingView behavior="padding" enabled>
-                    <View style={{ height: Dimensions.get('window').height - 30 }}>
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <ImageBackground
-                                style={{ height: 250, width: 250 }}
-                                imageStyle={{ borderTopLeftRadius: 25 }}
-                                source={require('../images/logo-bigsize.png')}
-                            >
-                            </ImageBackground>
-                        </View>
-                        <View style={{ flex: 1 }}>
-                            <View style={{ marginTop: 10 }}>
-                                <Icon name="phone" size={28} color={'rgba(255, 255, 255, 0.8)'}
-                                    style={styles.inputIcon} />
-                                <TextInput
-                                    style={styles.inputText}
-                                    placeholder={'Số điện thoại'}
-                                    placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
-                                    underlineColorAndroid={'transparent'}
-                                    keyboardType='phone-pad'
-                                    value={this.state.name}
-                                    onChangeText={(text) => this.setState({
-                                        name: text,
-                                    })}
-                                />
-                            </View>
-                            <View style={{ marginTop: 10 }}>
-                                <Icon name="lock" size={28} color={'rgba(255, 255, 255, 0.8)'}
-                                    style={styles.inputIcon} />
-                                <TextInput
-                                    style={styles.inputText}
-                                    placeholder={'Mật khẩu'}
-                                    placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
-                                    underlineColorAndroid={'transparent'}
-                                    secureTextEntry={this.state.isHidePass}
-                                    value={this.state.pass}
-                                    onChangeText={(text) => this.setState({
-                                        pass: text,
-                                    })}
-                                />
-
-                                <TouchableOpacity
-                                    style={styles.inputEye}
-                                    onPressIn={() => this.eyeHandleIn()}
-                                    onPressOut={() => this.eyeHandleOut()}
+                    {/*<Text style={styles.welcome}>Welcome</Text>*/}
+                    <KeyboardAvoidingView behavior="padding" enabled>
+                        <View style={{ height: Dimensions.get('window').height - 30 }}>
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <ImageBackground
+                                    style={{ height: 250, width: 250 }}
+                                    imageStyle={{ borderTopLeftRadius: 25 }}
+                                    source={require('../images/logo-bigsize.png')}
                                 >
-                                    <Icon name="eye" size={28} color={'rgba(255, 255, 255, 0.7)'} />
+                                </ImageBackground>
+                                <Text style={{ color: 'rgba(0, 0, 128, 0.6)', fontSize: 22, textAlign: 'right', marginRight: 10, fontWeight:'bold' }}>Bác sĩ</Text>
+                            </View>
+
+                            <View style={{ flex: 1 }}>
+                                <View style={{ marginTop: 10 }}>
+                                    <Icon name="phone" size={28} color={'rgba(255, 255, 255, 0.8)'}
+                                        style={styles.inputIcon} />
+                                    <TextInput
+                                        style={styles.inputText}
+                                        placeholder={'Số điện thoại'}
+                                        placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
+                                        underlineColorAndroid={'transparent'}
+                                        keyboardType='phone-pad'
+                                        value={this.state.name}
+                                        onChangeText={(text) => this.setState({
+                                            name: text,
+                                        })}
+                                    />
+                                </View>
+                                <View style={{ marginTop: 10 }}>
+                                    <Icon name="lock" size={28} color={'rgba(255, 255, 255, 0.8)'}
+                                        style={styles.inputIcon} />
+                                    <TextInput
+                                        style={styles.inputText}
+                                        placeholder={'Mật khẩu'}
+                                        placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
+                                        underlineColorAndroid={'transparent'}
+                                        secureTextEntry={this.state.isHidePass}
+                                        value={this.state.pass}
+                                        onChangeText={(text) => this.setState({
+                                            pass: text,
+                                        })}
+                                    />
+
+                                    <TouchableOpacity
+                                        style={styles.inputEye}
+                                        onPressIn={() => this.eyeHandleIn()}
+                                        onPressOut={() => this.eyeHandleOut()}
+                                    >
+                                        <Icon name="eye" size={28} color={'rgba(255, 255, 255, 0.7)'} />
+                                    </TouchableOpacity>
+                                </View>
+                                {errorMessage}
+                                <TouchableOpacity
+                                    onPress={() => this.handleLogin()}
+                                    style={styles.btnLogin}
+                                >
+                                    <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold', padding: 10 }}>
+                                        ĐĂNG NHẬP
+            </Text>
                                 </TouchableOpacity>
                             </View>
-                            {errorMessage}
-                            <TouchableOpacity
-                                onPress={() => this.handleLogin()}
-                                style={styles.btnLogin}
-                            >
-                                <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold', padding: 10 }}>
-                                    ĐĂNG NHẬP
-            </Text>
-                            </TouchableOpacity>
+                            <View style={styles.signUpContent}>
+                                <TouchableOpacity
+                                    style={{ flex: 1 }}
+                                    onPress={() => {}}>
+                                    <Text style={{ color: 'rgba(255, 0, 0, 0.8)', fontSize: 17, textAlign: 'right', marginRight: 10 }}>Quên mật khẩu</Text>
+                                </TouchableOpacity>
+                                <Text style={{ color: 'rgba(66, 4, 15, 0.8)', fontSize: 17, textAlign: 'right', marginRight: 10, fontWeight: 'bold' }}>|</Text>
+                                <TouchableOpacity
+                                    onPress={() => this.loginWithPhone()}
+                                    style={{ flex: 1 }}
+                                >
+                                    <Text style={{ color: 'rgba(255, 0, 70, 1)', fontSize: 17, fontWeight: 'bold' }}>
+                                        Đăng ký</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                        <View style={styles.signUpContent}>
-
-                            <Text style={{ flex: 1, color: 'rgba(255, 0, 0, 0.5)', fontSize: 17, textAlign: 'right', marginRight: 10 }}>
-                                Chưa có tài khoản?
-          </Text>
-                            <TouchableOpacity
-                                onPress={() => this.loginWithPhone()}
-                                style={{ flex: 1 }}
-                            >
-                                <Text style={{ color: 'rgba(255, 0, 70, 1)', fontSize: 17, fontWeight: 'bold' }}>
-                                    ĐĂNG KÝ NGAY!
-            </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </KeyboardAvoidingView>
-            </ImageBackground>
+                    </KeyboardAvoidingView>
+                </ImageBackground>
             )
         }
-        return(
-            <View style = {{ alignItems: "center", justifyContent: 'center', flex: 1 }}>
-                <ActivityIndicator size="large" color="#00ff00"/>
+        return (
+            <View style={{ alignItems: "center", justifyContent: 'center', flex: 1 }}>
+                <ActivityIndicator size="large" color="#00ff00" />
             </View>
         );
     }
 
     render() {
-        
+
 
         return (
             <View style={{ flex: 1 }}>

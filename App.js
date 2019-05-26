@@ -16,7 +16,11 @@ import LoginScreen from './screens/LoginScreen';
 import AuthLoadingScreen from './screens/AuthLoadingScreen';
 import SearchScreen from './screens/SearchScreen';
 import PatientProfile from './screens/PatientProfile';
+<<<<<<< HEAD
 import RelativeStas from './screens/RelativeStas';
+=======
+import RegisterInformationPage from './screens/RegisterInformationPage';
+>>>>>>> 7ac9c75e6534be475e1761a5d030871a2809db6c
 import { YellowBox } from 'react-native';
 import api from './services/config';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -31,8 +35,21 @@ const LoginStack = createStackNavigator({
     screen: LoginScreen,
     navigationOptions: () => ({
       header: null,
-    }),
-  },
+    }),},
+    RegisterInformationPage: {
+      screen: RegisterInformationPage,
+      navigationOptions: {
+        headerStyle: {
+          backgroundColor: 'rgba(54, 175, 160, 1)',
+        },
+        headerBackTitleStyle: {
+          fontSize: 25,
+          fontWeight: 'bold',
+          color: 'white',
+        },
+        headerTintColor: 'white'
+      },
+    },
 })
 
 const HomeStack = createStackNavigator({

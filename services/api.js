@@ -13,6 +13,7 @@ export default () => {
                     return null
                 })
         },
+<<<<<<< HEAD
         getHealthValue: (info) => {
             return axiosGet(baseURL + `statistics?MaBenhNhan=${info.MaBenhNhan}&Loai=${info.Loai}`)
                 .then((res) => {
@@ -34,6 +35,33 @@ export default () => {
                     return null
                 })
         },
+=======
+
+        getBacSiInfo: (info) => {
+            return axiosGet(baseURL + `doctors/find-doctor-by-id?MaBacSi=${info.MaBacSi}`)
+                .then((res) => {
+                    if (res.data.status === 'success') {
+                        return res.data.doctor
+                    }
+                    return null;
+                })
+        },
+
+        register:(doctor)=>{
+            return axiosPost(baseURL + `doctors/sign-up`, {
+                MaBacSi: doctor.MaBacSi,
+                Password: doctor.Password,
+                HoTen: doctor.HoTen,
+                ChuyenMon: doctor.ChuyenMon
+            })
+                .then((res) => {
+                    if (res.data.status === 'success') {
+                        return res.data.status
+                    }
+                    return null
+                })
+        }
+>>>>>>> 7ac9c75e6534be475e1761a5d030871a2809db6c
     }
     return services
 }

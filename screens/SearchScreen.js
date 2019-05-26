@@ -17,9 +17,9 @@ class SearchScreen extends Component {
 
     _searchPatient = (text) => {
         this.setState({ loading: true, fail: '' });
-        axios(api + 'patients/find-patient-by-name', {
+        axios(api + 'patients/find-patient-by-id', {
             params: {
-                HoTen: text
+                MaBenhNhan: text
             }
           }).then(response => {
             let data = response.data;

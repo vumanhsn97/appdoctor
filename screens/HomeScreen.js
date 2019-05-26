@@ -38,6 +38,9 @@ class HomeScreen extends Component {
             if  (data.status == 'success') {
                 data = data.list_patients;
                 this.setState({ patients: data, data: data, loading: true});
+            } else {
+                AsyncStorage.clear();
+                this.props.navigation.navigate('LoginStack');
             }
           })
           .catch(error => {
@@ -104,27 +107,15 @@ class HomeScreen extends Component {
             return (
                 <View>
                     <View style={{ flexDirection: 'row', marginBottom: 10, height: 60, borderBottomColor: '#EFEFEF', backgroundColor: 'rgba(54, 175, 160, 1)', alignItems: 'center' }}>
-                        <View style={{ flexDirection: 'row', backgroundColor: 'white', flex: 1, borderRadius: 15, marginLeft: 5, marginRight: 5 }}>
-                            <View style={{ justifyContent: 'center', paddingLeft: 10, paddingRight: 5 }}>
-                                {(this.state.focus) ? <TouchableOpacity onPress={this.backClick} >
-                                    <View style={{ paddingRight: 10 }}>
-                                        <Icon name='arrow-circle-left' size={20} color='gray' />
-                                    </View>
-                                </TouchableOpacity> : <Icon name='search' size={20} color='gray' />}
-                            </View>
-                            <TextInput
-                                style={{ flex: 1, padding: 5, }}
-                                placeholder=''
-                                value={this.state.textsearch}
-                                onFocus={(text) => this.onInputFocus({ text })}
-                                onChangeText={(text) => this.searchPatient({ text })}
-                            />
+                        <View style={{ flex: 1, marginLeft: 5, marginRight: 5, alignItems: 'center' }}>
+                           
                         </View>
-                        {this.state.focus ? <Text></Text> : <TouchableOpacity onPress = {() => this.props.navigation.navigate('SearchScreen')}>
-                            <View style={{ paddingLeft: 10, paddingRight: 10 }}>
-                                <Icon name='user-plus' size={20} color='white' />
+                        <TouchableOpacity onPress = {() => this.props.navigation.navigate('SearchScreen')}>
+                            <View style={{ paddingLeft: 10, paddingRight: 10, flexDirection: 'row' }}>
+                                <Text style={{ marginRight: 2, color: 'white', fontSize: 16 }}>Tìm kiếm</Text>
+                                
                             </View>
-                        </TouchableOpacity>}
+                        </TouchableOpacity>
                     </View>
                     <FlatList
                         data={this.state.patients}

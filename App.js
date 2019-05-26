@@ -16,14 +16,20 @@ import LoginScreen from './screens/LoginScreen';
 import AuthLoadingScreen from './screens/AuthLoadingScreen';
 import SearchScreen from './screens/SearchScreen';
 import PatientProfile from './screens/PatientProfile';
-import {YellowBox} from 'react-native';
+import { YellowBox } from 'react-native';
+import api from './services/config';
+import AsyncStorage from '@react-native-community/async-storage';
+import axios from 'axios';
+import io from 'socket.io-client';
+const socket = io(api);
 YellowBox.ignoreWarnings(['ViewPagerAndroid']);
+import * as actions from './actions';
 
 const LoginStack = createStackNavigator({
   LoginScreen: {
     screen: LoginScreen,
     navigationOptions: () => ({
-     header: null,
+      header: null,
     }),
   },
 })
@@ -32,7 +38,7 @@ const HomeStack = createStackNavigator({
   HomeScreen: {
     screen: HomeScreen,
     navigationOptions: () => ({
-     header: null,
+      header: null,
     }),
   },
 });
@@ -41,28 +47,43 @@ const MessStack = createStackNavigator({
   MessScreen: {
     screen: MessScreen,
     navigationOptions: () => ({
-     header: null,
+      header: null,
     }),
   },
 });
 
 const NotifyStack = createStackNavigator({
-  NotifyScreen:  {
+  NotifyScreen: {
     screen: NotifyScreen,
     navigationOptions: () => ({
-     header: null,
+      header: null,
     }),
   },
 });
 
 const ProfileStack = createStackNavigator({
-  ProfileScreen:  {
+  ProfileScreen: {
     screen: ProfileScreen,
     navigationOptions: () => ({
-     header: null,
+      header: null,
     }),
   },
 });
+
+getNotifi = async () => {
+  const userId = await AsyncStorage.getItem('UserId');
+  socket.emit("join room", {
+    LoaiTaiKhoan: 2,
+    MaTaiKhoan: userId
+  })
+  socket.emit('get notifications number', {
+    MaTaiKhoan: userId,
+    LoaiTaiKhoan: 2
+  })
+  socket.on('get notifications number', (info) => {
+    return info;
+  })
+}
 
 const TabNavigator = createMaterialTopTabNavigator({
   HomeStack: HomeStack,
@@ -70,50 +91,60 @@ const TabNavigator = createMaterialTopTabNavigator({
   NotifyStack: NotifyStack,
   ProfileStack: ProfileStack
 },
-{
-  defaultNavigationOptions: ({ navigation }) => ({
-    tabBarIcon: ({ focused, tintColor}) => {
-      let iconName;
-      const { routeName } = navigation.state;
-      if (routeName === 'HomeStack') {
-        iconName='address-book';
-      } else if (routeName === 'MessStack') {
-        iconName = 'comments';
-      } else if (routeName === 'NotifyStack') {
-        iconName = 'bell';
-      } else if (routeName === 'ProfileStack') {
-        iconName = 'user';
-      }
-      return <Icon size={20} color={tintColor} name={iconName} />;
-    },
-    title: 'hheaea',
-    swipeEnabled: false,
-    tabBarPosition: 'bottom',
-    tabBarOptions: {
-      activeTintColor: 'rgba(54, 175, 160, 1)',
-      inactiveTintColor: 'rgba(54, 175, 160, 0.5)',
-      indicatorStyle: {
-        opacity: 0
+  {
+    defaultNavigationOptions: ({ navigation }) => ({
+      tabBarIcon: ({ focused, tintColor }) => {
+        let iconName;
+        const { routeName } = navigation.state;
+        if (routeName === 'HomeStack') {
+          iconName = 'address-book';
+        } else if (routeName === 'MessStack') {
+          iconName = 'comments';
+        } else if (routeName === 'NotifyStack') {
+          iconName = 'bell';
+        } else if (routeName === 'ProfileStack') {
+          iconName = 'user';
+        }
+        this.getNotifi();
+        return (
+          <View>
+            {iconName != 'befll' ? <Icon size={20} color={tintColor} name={iconName} /> :
+              <View>
+                <Icon size={20} color={tintColor} name={iconName} />
+                <Text style={{ position: 'absolute', bottom: 10, left: 15, color: 'red' }}>2</Text>
+              </View>
+            }
+          </View>
+        )
       },
-      style: {
-        backgroundColor: 'white',
-        borderTopColor: '#EFEFEF',
-        borderTopWidth: 1,
+      title: 'hheaea',
+      swipeEnabled: false,
+      tabBarPosition: 'bottom',
+      tabBarOptions: {
+        activeTintColor: 'rgba(54, 175, 160, 1)',
+        inactiveTintColor: 'rgba(54, 175, 160, 0.5)',
+        indicatorStyle: {
+          opacity: 0
+        },
+        style: {
+          backgroundColor: 'white',
+          borderTopColor: '#EFEFEF',
+          borderTopWidth: 1,
+        },
+        showLabel: false,
+        showIcon: true,
       },
-      showLabel: false,
-      showIcon: true,
-    },
-  })
-});
+    })
+  });
 
 const TabScreen = createStackNavigator({
-  TabNavigator:  {
+  TabNavigator: {
     screen: TabNavigator,
     navigationOptions: () => ({
-     header: null
+      header: null
     }),
   },
-  PatientScreen:  {
+  PatientScreen: {
     screen: PatientScreen,
     navigationOptions: () => ({
       headerStyle: {
@@ -156,20 +187,21 @@ const TabScreen = createStackNavigator({
 
 const MainNavigator = createAppContainer(createSwitchNavigator({
   AuthLoading: AuthLoadingScreen,
-  LoginStack: {screen: LoginStack,
-    navigationOptions:{
-      header:null,
+  LoginStack: {
+    screen: LoginStack,
+    navigationOptions: {
+      header: null,
     },
   },
-  AppStack : {
+  AppStack: {
     screen: TabScreen,
-    navigationOptions:{
-      header:null,
+    navigationOptions: {
+      header: null,
     },
   }
 }, {
-  initialRouteName: 'AuthLoading',
-}));
+    initialRouteName: 'AuthLoading',
+  }));
 
 export default class App extends React.Component {
   render() {

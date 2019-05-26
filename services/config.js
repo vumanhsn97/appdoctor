@@ -1,1 +1,1 @@
-export default api ='http://192.168.43.241:5500/';
+export default api ='http://192.168.1.2:5500/';

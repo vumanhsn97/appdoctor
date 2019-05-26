@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Image, Text, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Image, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Divider } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
 import api from '../services/config';
+import io from 'socket.io-client';
+const socket = io(api);
+import AsyncStorage from '@react-native-community/async-storage';
 
 class InforCard extends Component {
     render() {
@@ -21,19 +24,31 @@ class PatientProfile extends Component {
         super(props);
 
         this.state = {
-            loading: true
+            loading: true,
+            follow: '',
         }
 
         //this._bootstrapAsync();
     }
 
-
-     componentDidMount() {
+    componentDidMount  = async() =>  {
         this.setState({ loading: true });
-        const userId = this.props.navigation.getParam('id', 'nope');
+        const id = this.props.navigation.getParam('id', 'nope');
+        const userId = await AsyncStorage.getItem('UserId');
+        axios.get(api + 'follows/check-relationship-of-patient-with-doctor', {
+            params: {
+                MaBenhNhan: id,
+                MaBacSi: userId
+            }
+        }).then(response => {
+            console.log(response.data.typeRelationship);
+            this.setState({ follow: response.data.typeRelationship })
+        }).catch(error => {
+            console.log(error)
+        })
         axios.get(api + 'patients/find-patient-by-id', {
             params: {
-                MaBenhNhan: userId
+                MaBenhNhan: id
             }
         }).then(response => {
             let data = response.data.patient[0];
@@ -55,6 +70,80 @@ class PatientProfile extends Component {
             })
     };
 
+    handleClick = async () => {
+        
+        const userId = await AsyncStorage.getItem('UserId');
+        socket.emit("join room", {
+            LoaiTaiKhoan: 2,
+            MaTaiKhoan: this.state.data.MaBenhNhan
+        })
+        if (this.state.follow == 'add') {
+            axios.post(api + 'follows/wait', {
+                NguoiTheoDoi: userId,
+                NguoiBiTheoDoi: this.state.data.MaBenhNhan,
+                Type: 2
+            }).then(response => {
+                console.log('hello');
+                this.setState({ follow: 'cancel' })
+            }).catch(error => {
+                console.log(error)
+            })
+            socket.emit("create notifications", {
+                MaTaiKhoan: userId,
+                LoaiNguoiChinh: 2,
+                MaTaiKhoanLienQuan: this.state.data.MaBenhNhan,
+                LoaiNguoiLienQuan: 1,
+                TenNguoiLienQuan: this.state.data.HoTen,
+                AvatarNguoiLienQuan: this.state.data.Avatar,
+                LoaiThongBao: 1,
+                LoaiTaiKhoan: 2
+            });
+        }
+        if (this.state.follow == 'accept') {
+            axios.post(api + 'follows/followed', {
+                NguoiTheoDoi: userId,
+                NguoiBiTheoDoi: this.state.data.MaBenhNhan,
+                Type: 2
+            }).then(response => {
+                console.log('hello');
+                this.setState({ follow: 'followed' })
+            }).catch(error => {
+                console.log(error)
+            })
+            socket.emit("create notifications", {
+                MaTaiKhoan: userId,
+                LoaiNguoiChinh: 2,
+                MaTaiKhoanLienQuan: this.state.data.MaBenhNhan,
+                LoaiNguoiLienQuan: 1,
+                TenNguoiLienQuan: this.state.data.HoTen,
+                AvatarNguoiLienQuan: this.state.data.Avatar,
+                LoaiThongBao: 1,
+                LoaiTaiKhoan: 2
+            });
+        }
+
+        if (this.state.follow == 'followed' || this.state.follow == 'cancel') {
+            axios.post(api + 'follows/unfollowed', {
+                NguoiTheoDoi: userId,
+                NguoiBiTheoDoi: this.state.data.MaBenhNhan,
+                Type: 2
+            }).then(response => {
+                console.log('hello');
+                this.setState({ follow: 'add' })
+            }).catch(error => {
+                console.log(error)
+            })
+        }
+        
+        socket.on("update list notifications", function (data) {
+            console.log(data);
+        })
+    }
+
+    handleClickUnFollow = () => {
+
+    }
+
     _renderLayout = () => {
         if (!this.state.loading) {
             return (
@@ -66,26 +155,11 @@ class PatientProfile extends Component {
                         </Image>
                         <View style={{ flex: 1 }}>
                             <Text style={{ marginBottom: 15, fontSize: 20, paddingLeft: 20 }}>{this.state.data.HoTen}</Text>
-                            <View style={{ justifyContent: 'space-between', flexDirection: 'row', paddingLeft: 30, paddingRight: 30 }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Icon name='phone' size={25} />
-                                    <Text style={{ marginLeft: 5, fontSize: 16 }}>Giọi điện</Text>
+                            <TouchableOpacity onPress={() => this.handleClick()}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
+                                    <Text style={{ marginLeft: 5, fontSize: 16 }}>{this.state.follow}</Text>
                                 </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Icon name='comment-dots' size={25} />
-                                    <Text style={{ marginLeft: 5, fontSize: 16 }}>Nhắn tin</Text>
-                                </View>
-                            </View>
-                            <View style={{ justifyContent: 'space-between', flexDirection: 'row', paddingLeft: 30, paddingRight: 30, marginTop: 10 }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Icon name='eye' size={25} />
-                                    <Text style={{ marginLeft: 5, fontSize: 16 }}>Theo dõi</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Icon name='file-invoice' size={25} />
-                                    <Text style={{ marginLeft: 5, fontSize: 16 }}>Chỉ số</Text>
-                                </View>
-                            </View>
+                            </TouchableOpacity>
                         </View>
                     </View>
                     <View style={{ flexDirection: 'row', padding: 10 }}>
@@ -114,9 +188,9 @@ class PatientProfile extends Component {
                 </ScrollView>
             )
         }
-        return(
-            <View style = {{ alignItems: "center", justifyContent: 'center', flex: 1 }}>
-                <ActivityIndicator size="large" color="#00ff00"/>
+        return (
+            <View style={{ alignItems: "center", justifyContent: 'center', flex: 1 }}>
+                <ActivityIndicator size="large" color="#00ff00" />
             </View>
         )
     }

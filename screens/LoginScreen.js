@@ -64,23 +64,30 @@ export default class LoginPage extends Component {
     }
 
     loginWithPhone = () => {
-        // RNAccountKit.loginWithPhone()
-        //     .then(async (token) => {
-        //         if (!token) {
-        //             console.log('Xác thực sai')
-        //         } else {
-        //             let acc = await this.sendRequestForPhoneNumber(token.code);
-        //             console.log(acc);
-        //             this.props.navigation.navigate('RegisterInformationPage', { acc: acc })
-        //         }
-        //     })
-        this.props.navigation.navigate('RegisterInformationPage', {acc:{
-            phone:{
-                national_number:'0975206769'
-            }
-        }})
-
+        RNAccountKit.loginWithPhone()
+            .then(async (token) => {
+                if (!token) {
+                    console.log('Xác thực sai')
+                } else {
+                    let acc = await this.sendRequestForPhoneNumber(token.code);
+                    console.log(acc);
+                    this.props.navigation.navigate('RegisterInformationPage', { acc: acc })
+                }
+            })
     }
+
+    forgetWithPhone = () => {
+        RNAccountKit.loginWithPhone()
+          .then(async (token) => {
+            if (!token) {
+              console.log('Xác thực thất bại. Do mã không đúng!')
+            } else {
+              let acc = await this.sendRequestForPhoneNumber(token.code);
+              console.log(acc);
+              this.props.navigation.navigate('ForgetInformationPage', { acc: acc })
+            }
+          })
+      }
 
     handleLogin = () => {
         this.setState({ loading: true })
@@ -193,13 +200,13 @@ export default class LoginPage extends Component {
                                 >
                                     <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold', padding: 10 }}>
                                         ĐĂNG NHẬP
-            </Text>
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.signUpContent}>
                                 <TouchableOpacity
                                     style={{ flex: 1 }}
-                                    onPress={() => {}}>
+                                    onPress={() => this.forgetWithPhone()}>
                                     <Text style={{ color: 'rgba(255, 0, 0, 0.8)', fontSize: 17, textAlign: 'right', marginRight: 10 }}>Quên mật khẩu</Text>
                                 </TouchableOpacity>
                                 <Text style={{ color: 'rgba(66, 4, 15, 0.8)', fontSize: 17, textAlign: 'right', marginRight: 10, fontWeight: 'bold' }}>|</Text>
@@ -208,7 +215,8 @@ export default class LoginPage extends Component {
                                     style={{ flex: 1 }}
                                 >
                                     <Text style={{ color: 'rgba(255, 0, 70, 1)', fontSize: 17, fontWeight: 'bold' }}>
-                                        Đăng ký</Text>
+                                        Đăng ký
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -290,5 +298,6 @@ const styles = StyleSheet.create({
         bottom: 10,
         position: 'absolute',
         flexDirection: 'row',
+        textAlign: 'center'
     }
 });

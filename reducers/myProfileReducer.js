@@ -23,6 +23,9 @@ export default function(state = data, actions) {
             if (actions.key == 'image') {
                 d.Avatar = actions.value
             }
+            if (actions.key == 'speciality') {
+                d.ChuyenMon = actions.value
+            }
             console.log(d);
             axios.post(api + 'doctors/update-profile', d)
                 .then(async (response) => {

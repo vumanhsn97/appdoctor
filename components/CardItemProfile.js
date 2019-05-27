@@ -19,8 +19,25 @@ class CardItem extends Component {
     }
 
     updateData = () => {
-        this.props.updateMyProfile(this.props.keyname, this.state.data);
-        this.setState({ update: this.state.data, open: false })
+        if (this.props.type === 'speciality') {
+            var majors = [];
+            if (this.state.checkDuongHuyet) {
+                majors.push("Đường huyết");
+            }
+            if (this.state.checkHuyetAp) {
+                majors.push("Huyết áp");
+            }
+            this.setState({
+                data: majors.toString()
+            }, () => {
+                this.props.updateMyProfile(this.props.keyname, this.state.data);
+                this.setState({ update: this.state.data, open: false })
+            })
+        }
+        else {
+            this.props.updateMyProfile(this.props.keyname, this.state.data);
+            this.setState({ update: this.state.data, open: false })
+        }
     }
 
 
@@ -57,12 +74,12 @@ class CardItem extends Component {
                                     <CheckBox
                                         title="Đường huyết"
                                         checked={this.state.checkDuongHuyet}
-                                        onPress={() => this.setState({ data: true })}
+                                        onPress={() => this.setState({ checkDuongHuyet: !this.state.checkDuongHuyet })}
                                     />
                                     <CheckBox
                                         title="Huyết áp"
                                         checked={this.state.checkHuyetAp}
-                                        onPress={() => this.setState({ data: false })}
+                                        onPress={() => this.setState({ checkHuyetAp: !this.state.checkHuyetAp })}
                                     />
                                 </View>
                             }

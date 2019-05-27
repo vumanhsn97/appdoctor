@@ -44,7 +44,18 @@ export default () => {
                     return null;
                 })
         },
-
+        forgetBacSiPassword: (info) => {
+            return axiosPost(baseURL + `doctors/forget-password`, {
+                MaBacSi: info.MaBacSi,
+                NewPassword: info.NewPassword,
+            })
+                .then((res) => {
+                    if (res.data.status === 'success') {
+                        return res.data.status
+                    }
+                    return null
+                })
+        },
         register:(doctor)=>{
             return axiosPost(baseURL + `doctors/sign-up`, {
                 MaBacSi: doctor.MaBacSi,

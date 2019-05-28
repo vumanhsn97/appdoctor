@@ -9,10 +9,12 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import ImagePicker from 'react-native-image-picker';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
+import ApiService from '../services/api';
 
 class ProfileScreen extends Component {
     constructor(props) {
         super(props);
+        this.apiService = ApiService()
         this.state = {
             image: "",
             loading: false,
@@ -84,6 +86,7 @@ class ProfileScreen extends Component {
               },
               {text: 'Có', onPress: async () => {
                 await AsyncStorage.clear();
+                await this.apiService.logout();
                 this.props.navigation.navigate('LoginStack');
               }},
             ],

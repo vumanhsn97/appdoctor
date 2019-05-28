@@ -69,6 +69,9 @@ export default () => {
                     }
                     return null
                 })
+        },
+        logout: () => {
+            return axiosPost(baseURL + 'log-out')
         }
     }
     return services

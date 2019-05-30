@@ -197,9 +197,9 @@ export default class ChatScreen extends Component {
             await socket.emit('create notifications', info);
             const info2 = {
                 MaNguoiGui: this.state.myID,
-                LoaiNguoiGui: 1,
+                LoaiNguoiGui: 2,
                 MaNguoiNhan: this.state.receiverID,
-                LoaiNguoiNhan: 2,
+                LoaiNguoiNhan: 1,
                 updateList: true,
             }
             await socket.emit('update relationship', info2);

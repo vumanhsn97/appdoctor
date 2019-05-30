@@ -55,13 +55,17 @@ class NotiCard extends Component {
                         size='medium'
                         title={this.props.data.HoTen ? this.props.data.HoTen[this.props.data.HoTen.lastIndexOf(' ') + 1] : ''}
                         activeOpacity={0.7}
-                        containerStyle={{ width: 40, height: 40, borderRadius: 40 / 2  }}
+                        containerStyle={{ width: 40, height: 40, borderRadius: 40 / 2 }}
                         source={{ uri: 'data:image/jpeg;base64,' + this.props.data.AvatarNguoiLienQuan }}
                     />
-                    <Text style={{ flex: 1, marginLeft: 10, fontSize: 14 }}>
-                        <Text style={{ color: 'black' }}>{this.props.data.TenNguoiLienQuan}</Text>
-                        <Text>{this.props.data.LoaiThongBao === 1 ? ' muốn bạn theo dõi sức khỏe' : this.props.data.LoaiThongBao === 2 ? ' gửi tin nhắn mới cho bạn' : ' đã chấp nhận được theo dõi'}</Text>
-                    </Text>
+                    <View style={{ flex: 1, marginLeft: 10, fontSize: 14 }}>
+                        <Text>
+                            <Text>Bệnh nhân </Text>
+                            <Text style={{ color: 'black' }}>{this.props.data.TenNguoiLienQuan}</Text>
+                            <Text>{this.props.data.LoaiThongBao === 1 ? ' muốn bạn theo dõi sức khỏe' : this.props.data.LoaiThongBao === 2 ? ' gửi tin nhắn mới cho bạn' : ' đã chấp nhận được theo dõi'}</Text>
+                        </Text>
+                        <Text>{this.props.data.ThoiGian}</Text>
+                    </View>
                 </View>
             </TouchableOpacity>
         )

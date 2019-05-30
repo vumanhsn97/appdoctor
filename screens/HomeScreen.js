@@ -36,7 +36,7 @@ class HomeScreen extends Component {
             LoaiTaiKhoan: 2,
             MaTaiKhoan: userId
         })
-        
+
         axios(api + 'follows/list-doctor-following', {
             params: {
                 MaBacSi: userId
@@ -67,11 +67,11 @@ class HomeScreen extends Component {
                 let data = response.data;
                 if (data.status == 'success') {
                     data = data.list_patients;
-                    this.setState({ patients: data, data: data, no:'' });
+                    this.setState({ patients: data, data: data, no: '' });
                 } else {
                     //AsyncStorage.clear();
                     //this.props.navigation.navigate('LoginStack');
-                    this.setState({data: [], patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
+                    this.setState({ data: [], patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
                 }
             })
                 .catch(error => {
@@ -90,26 +90,26 @@ class HomeScreen extends Component {
             let iconName;
             const { routeName } = navigation.state;
             if (routeName === 'HomeStack') {
-              iconName = 'search';
+                iconName = 'search';
             } else if (routeName === 'MessStack') {
-              iconName = 'comments';
+                iconName = 'comments';
             } else if (routeName === 'NotifyStack') {
-              iconName = 'bell';
+                iconName = 'bell';
             } else if (routeName === 'ProfileStack') {
-              iconName = 'user';
+                iconName = 'user';
             }
             return (
-              <View>
-                {iconName != 'befll' ? <Icon size={20} color={tintColor} name={iconName} /> :
-                  <View>
-                    <Icon size={20} color={tintColor} name={iconName} />
-                    <Text style={{ position: 'absolute', bottom: 10, left: 15, color: 'red' }}>2</Text>
-                  </View>
-                }
-              </View>
+                <View>
+                    {iconName != 'befll' ? <Icon size={20} color={tintColor} name={iconName} /> :
+                        <View>
+                            <Icon size={20} color={tintColor} name={iconName} />
+                            <Text style={{ position: 'absolute', bottom: 10, left: 15, color: 'red' }}>2</Text>
+                        </View>
+                    }
+                </View>
             )
-          },
-      };
+        },
+    };
 
 
     componentDidMount() {
@@ -165,6 +165,14 @@ class HomeScreen extends Component {
         Keyboard.dismiss();
     }
 
+    _renderNo = () => {
+        if (this.state.no === '') return;
+        return (
+            <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                <Text style={{ color: 'black' }}>{this.state.no}</Text>
+            </View>)
+    }
+
     _renderLayout = () => {
         if (this.state.loading) {
             return (
@@ -179,9 +187,7 @@ class HomeScreen extends Component {
                             </View>
                         </TouchableOpacity>
                     </View>
-                    <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-                        <Text style={{ color: 'black' }}>{this.state.no}</Text>
-                    </View>
+                    {this._renderNo()}
                     <FlatList
                         data={this.state.patients}
                         keyboardShouldPersistTaps='always'

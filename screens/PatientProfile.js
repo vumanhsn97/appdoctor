@@ -271,7 +271,20 @@ class PatientProfile extends Component {
                                 </View>
                                 <View style={{ paddingRight: 20, justifyContent: 'space-between' }}>
                                     {
-                                        (this.state.type == 'followed' ? <TouchableOpacity onPress={() => this.props.navigation.navigate('ChatScreen', { data: this.state.data })}>
+                                        (this.state.type == 'followed' ? <TouchableOpacity onPress={() => {
+                                            
+                                            axios.post(api + 'chatnotifications/update-seeing-seen-messages', {
+                                                MaTaiKhoan: this.state.doctor.MaBacSi,
+                                                LoaiTaiKhoan: 2,
+                                                MaTaiKhoanLienQuan: this.state.data.MaBenhNhan,
+                                                LoaiTaiKhoanLienQuan: 1
+                                            }).then(response => {
+                                                this.props.navigation.navigate('ChatScreen', { data: this.state.data })
+                                            })
+                                                .catch(error => {
+                                                    console.log(error)
+                                                })
+                                        }} >
                                         <View style={{ flexDirection: 'row', paddingLeft: 20 }}>
                                             <Icon name='comment-dots' size={20} color='rgba(54, 175, 160, 1)'/>
                                             <Text style={{ marginLeft: 5, fontSize: 16, color: 'rgba(54, 175, 160, 1)' }}>Nhắn tin</Text>
@@ -287,7 +300,7 @@ class PatientProfile extends Component {
                                     </TouchableOpacity> : this.state.type == 'accept' ? <TouchableOpacity onPress={() => this.handleClickNotAccept()}>
 
                                         <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20, marginTop: 10 }}>
-                                            <Icon name='user-times' size={20} />
+                                            <Icon name='user-times' size={20} color='rgba(54, 175, 160, 1)' />
                                             <Text style={{ marginLeft: 5, fontSize: 16, color: 'rgba(54, 175, 160, 1)' }}>Không đồng ý</Text>
                                         </View>
                                     </TouchableOpacity> : <Text></Text>)}

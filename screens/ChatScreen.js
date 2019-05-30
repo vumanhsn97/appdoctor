@@ -1,13 +1,17 @@
 import React, { Component, PureComponent } from 'react';
-import { StyleSheet, Text, View, chatMessage, TouchableOpacity, FlatList, Alert, AsyncStorage, YellowBox } from 'react-native';
+import { StyleSheet, Text, View, chatMessage, TouchableOpacity, FlatList, Alert, YellowBox } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Avatar } from "react-native-elements";
 import { createAppContainer, createStackNavigator, StackActions, NavigationActions } from 'react-navigation';
 import socketIOClient from 'socket.io-client';
 import { TextInput } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-community/async-storage';
 import ApiChat from '../services/api';
 import baseURL from '../services/config'
+import { importDeclaration } from '@babel/types';
+import axiosFetch from '../services/axios-fetch';
+import axios from 'axios';
 
 const socket = socketIOClient(baseURL)
 
@@ -21,6 +25,7 @@ export class DateTime extends PureComponent {
         this.state = {
             currDate: '',
             time: '',
+            chated: 0
         }
     }
 
@@ -184,17 +189,28 @@ export default class ChatScreen extends Component {
         });
 
         socket.on('not seen message', async () => {
+            if (this.state.chated > 1) return;
+            axios.get(baseURL + 'doctors/find-doctor-by-id', {
+                params: {
+                    MaBacSi: await AsyncStorage.getItem('UserId')
+                }
+            }).then(async (response) => {
+                const info = {
+                    MaTaiKhoan: this.state.receiverID,
+                    LoaiNguoiChinh: 1,
+                    MaTaiKhoanLienQuan: this.state.myID,
+                    TenNguoiLienQuan: response.data.doctor[0].HoTen,
+                    AvatarNguoiLienQuan: response.data.doctor[0].Avatar,
+                    LoaiNguoiLienQuan: 2,
+                    LoaiThongBao: 2    // Thông báo có tin nhắn mới từ người khác
+                }
+                
+                await socket.emit('create notifications', info);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
             
-            const info = {
-                MaTaiKhoan: this.state.receiverID,
-                LoaiNguoiChinh: 1,
-                MaTaiKhoanLienQuan: this.state.myID,
-                TenNguoiLienQuan: this.props.navigation.getParam('data').HoTen,
-                AvatarNguoiLienQuan: this.props.navigation.getParam('data').Avatar,
-                LoaiNguoiLienQuan: 2,
-                LoaiThongBao: 2    // Thông báo có tin nhắn mới từ người khác
-            }
-            await socket.emit('create notifications', info);
             const info2 = {
                 MaNguoiGui: this.state.myID,
                 LoaiNguoiGui: 2,
@@ -220,7 +236,7 @@ export default class ChatScreen extends Component {
         let today = new Date();
         let _today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
         //Alert.alert(this.state.receiverID)
-
+        this.setState({ chated: this.state.chated + 1 })
         this.setState({
             chatMessage: {
                 MaNguoiGui: this.state.myID,

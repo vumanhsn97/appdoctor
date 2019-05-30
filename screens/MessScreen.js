@@ -27,7 +27,7 @@ class HomeScreen extends Component {
             <Icon name='search' size={20} color='black' />
         ),
     };
-    
+
     componentDidMount = async () => {
         const userId = await AsyncStorage.getItem('UserId');
         //AsyncStorage.clear();
@@ -105,6 +105,13 @@ class HomeScreen extends Component {
 
     }
 
+    _renderNo = () => {
+        if (this.state.no === '') return;
+        return (<View style={{ flexDirection: 'column', alignItems: 'center' }}>
+            <Text style={{ color: 'black' }}>{this.state.no}</Text>
+        </View>)
+    }
+
     render() {
         return (
             <View style={{ flex: 1 }}>
@@ -113,9 +120,7 @@ class HomeScreen extends Component {
                         <Text style={{ fontSize: 20, color: 'white' }}>Tin nhắn</Text>
                     </View>
                 </View>
-                <View style={{ alignItems: 'center' }}>
-                    <Text>{this.state.no}</Text>
-                </View>
+                {this._renderNo()}
                 <FlatList
                     data={this.state.patients}
                     keyboardShouldPersistTaps='always'

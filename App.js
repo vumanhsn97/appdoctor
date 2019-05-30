@@ -19,6 +19,7 @@ import PatientProfile from './screens/PatientProfile';
 import RelativeStas from './screens/RelativeStas';
 import RegisterInformationPage from './screens/RegisterInformationPage';
 import ForgetInformationPage from './screens/ForgetInformationPage';
+import StatsDetailRelative from './screens/StatsDetailRelative';
 import { YellowBox } from 'react-native';
 import api from './services/config';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -220,6 +221,12 @@ const TabScreen = createStackNavigator({
       header: null,
     }),
   },
+  StatsDetailRelative: {
+    screen: StatsDetailRelative,
+    navigationOptions: () => ({
+      header: null,
+    }),
+  },
 });
 
 const MainNavigator = createAppContainer(createSwitchNavigator({
@@ -244,7 +251,9 @@ export default class App extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        <MainNavigator />
+        <MainNavigator 
+          TabNavigator={this.TabNavigator}
+        />
       </Provider>
     );
   }

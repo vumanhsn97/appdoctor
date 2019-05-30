@@ -4,105 +4,125 @@ import { View, ScrollView, Text, FlatList, ListView, TextInput, TouchableOpacity
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as actions from '../actions';
 import CardMess from '../components/CardMess';
+import AsyncStorage from '@react-native-community/async-storage';
+import io from 'socket.io-client';
+import api from '../services/config';
+import axios from 'axios';
+const socket = io(api);
 
 class HomeScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: [],
             patients: [],
             focus: false,
             textsearch: "",
+            no: '',
         }
     }
 
-    componentDidMount() {
-        this.keyboardDidShowListener = Keyboard.addListener(
-            'keyboardDidShow',
-            this._keyboardDidShow,
-        );
-        this.keyboardDidHideListener = Keyboard.addListener(
-            'keyboardDidHide',
-            this._keyboardDidHide,
-        );
+    static navigationOptions = {
+        drawerLabel: 'HomeScreen',
+        drawerIcon: ({ tintColor }) => (
+            <Icon name='search' size={20} color='black' />
+        ),
+    };
+    
+    componentDidMount = async () => {
+        const userId = await AsyncStorage.getItem('UserId');
+        //AsyncStorage.clear();
+        socket.emit("join room", {
+            LoaiTaiKhoan: 2,
+            MaTaiKhoan: userId
+        })
+
+        axios(api + 'follows/list-doctor-following', {
+            params: {
+                MaBacSi: userId
+            }
+        }).then(response => {
+            let data = response.data;
+            if (data.status == 'success') {
+                data = data.list_patients;
+                console.log(data);
+                this.setState({ patients: data });
+            } else {
+                //AsyncStorage.clear();
+                //this.props.navigation.navigate('LoginStack');
+                this.setState({ no: 'Không có bệnh nhân nào được theo dõi' });
+            }
+        })
+            .catch(error => {
+                console.log(error)
+            })
+
+        socket.on('update list notifications', (info) => {
+            if (info.id === 2) {
+                axios(api + 'follows/list-doctor-following', {
+                    params: {
+                        MaBacSi: userId
+                    }
+                }).then(response => {
+                    let data = response.data;
+                    if (data.status == 'success') {
+                        data = data.list_patients;
+                        this.setState({ patients: data, no: '' });
+                    } else {
+                        //AsyncStorage.clear();
+                        //this.props.navigation.navigate('LoginStack');
+                        this.setState({ patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
+                    }
+                })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
+        });
+
+        socket.on('update relationship', (info) => {
+            axios(api + 'follows/list-doctor-following', {
+                params: {
+                    MaBacSi: userId
+                }
+            }).then(response => {
+                let data = response.data;
+                if (data.status == 'success') {
+                    data = data.list_patients;
+                    this.setState({ patients: data, no: '' });
+                } else {
+                    //AsyncStorage.clear();
+                    //this.props.navigation.navigate('LoginStack');
+                    this.setState({ patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
+                }
+            })
+                .catch(error => {
+                    console.log(error)
+                })
+        });
     }
 
     componentWillUnmount() {
-        this.keyboardDidShowListener.remove();
-        this.keyboardDidHideListener.remove();
+
     }
-
-    _keyboardDidShow() {
-    }
-
-    _keyboardDidHide = () => {
-        this.setState({ textsearch: "", focus: false })
-    }
-
-    searchPatient = ({ text }) => {
-        this.setState({ textsearch: text });
-        if (text === "") {
-            this.setState({ patients: [] });
-            return;
-        }
-        let list = [...this.state.data];
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].name.indexOf(text) === -1) {
-                list.splice(i, 1);
-                i = i - 1;
-            }
-        }
-        this.setState({ patients: list, textsearch: text });
-    }
-
-    onInputFocus = ({ text }) => {
-        this.setState({ focus: true });
-        this.searchPatient(text);
-    }
-
-    backClick = () => {
-        let list = [...this.state.data];
-        this.setState({ focus: false, patients: list, textsearch: "" });
-        Keyboard.dismiss();
-    }
-
-
 
     render() {
         return (
             <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', marginBottom: 10, height: 60, borderBottomColor: '#EFEFEF', backgroundColor: 'rgba(54, 175, 160, 1)', alignItems: 'center' }}>
-                    <View style={{ flexDirection: 'row', backgroundColor: 'white', flex: 1, borderRadius: 15, marginLeft: 5, marginRight: 5 }}>
-                        <View style={{ justifyContent: 'center', paddingLeft: 10, paddingRight: 5 }}>
-                            {this.state.focus ? <TouchableOpacity onPress={this.backClick} >
-                                <Icon name='arrow-circle-left' size={20} color='gray' />
-                            </TouchableOpacity> : <Icon name='search' size={20} color='gray' />}
-                        </View>
-                        <TextInput
-                            style={{ flex: 1, padding: 5, }}
-                            placeholder=''
-                            value={this.state.textsearch}
-                            onFocus={(text) => this.onInputFocus({ text })}
-                            onChangeText={(text) => this.searchPatient({ text })}
-                        />
+                    <View style={{ flex: 1, marginLeft: 5, marginRight: 5, alignItems: 'center' }}>
+                        <Text style={{ fontSize: 20, color: 'white' }}>Tin nhắn</Text>
                     </View>
-                    {this.state.focus ? <Text></Text> : <TouchableOpacity>
-                        <View style={{ paddingLeft: 10, paddingRight: 10 }}>
-                            <Icon name='user-plus' size={20} color='white' />
-                        </View>
-                    </TouchableOpacity>}
+                </View>
+                <View style={{ alignItems: 'center' }}>
+                    <Text>{this.state.no}</Text>
                 </View>
                 <FlatList
-                    data={this.props.patients}
+                    data={this.state.patients}
                     keyboardShouldPersistTaps='always'
                     keyExtractor={e => e.id}
                     renderItem={({ item }) => <CardMess
-                        id={item.id}
-                        highlight={item.highlight}
-                        name = {item.name}
-                        mess = {item.mess}
-                        time = {item.time}
-                        avatar = {item.avatar}
+                        item={item}
+                        navigation={this.props.navigation}
                     />}
 
                 />

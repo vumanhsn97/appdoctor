@@ -3,8 +3,10 @@ import { View, Text, Image, TouchableOpacity, FlatList } from 'react-native';
 import * as actions from '../actions';
 import api from '../services/config';
 import AsyncStorage from '@react-native-community/async-storage';
+import { Avatar } from 'react-native-elements';
 import axios from 'axios';
 import io from 'socket.io-client';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 const socket = io(api);
 
 class NotiCard extends Component {
@@ -12,6 +14,13 @@ class NotiCard extends Component {
         super(props);
         this.state = {}
     }
+
+    static navigationOptions = {
+        drawerLabel: 'HomeScreen',
+        drawerIcon: ({ tintColor }) => (
+            <Icon name='search' size={20} color='black' />
+        ),
+    };
 
     componentDidMount() {
         this.setState({ highlight: (this.props.data.DaXem == 0 ? true : false) });
@@ -34,17 +43,24 @@ class NotiCard extends Component {
                 })
         }
         this.setState({ highlight: false });
-        this.props.navigation.navigate('PatientProfile', {id: this.props.data.MaTaiKhoanChinh})
+        this.props.navigation.navigate('PatientProfile', { id: this.props.data.MaTaiKhoanLienQuan })
     }
 
     render() {
         return (
             <TouchableOpacity onPress={() => this.onHandleClick()}>
                 <View style={{ padding: 10, flexDirection: 'row', backgroundColor: this.state.highlight ? '#EFEFEF' : 'white' }}>
-                    <Image source={{ uri: this.props.data.AvatarNguoiLienQuan }} style={{ width: 40, height: 40, borderRadius: 60 / 2 }} />
+                    <Avatar
+                        rounded
+                        size='medium'
+                        title={this.props.data.HoTen ? this.props.data.HoTen[this.props.data.HoTen.lastIndexOf(' ') + 1] : ''}
+                        activeOpacity={0.7}
+                        containerStyle={{ width: 40, height: 40, borderRadius: 40 / 2  }}
+                        source={{ uri: 'data:image/jpeg;base64,' + this.props.data.AvatarNguoiLienQuan }}
+                    />
                     <Text style={{ flex: 1, marginLeft: 10, fontSize: 14 }}>
                         <Text style={{ color: 'black' }}>{this.props.data.TenNguoiLienQuan}</Text>
-                        <Text>{this.props.data.LoaiThongBao}</Text>
+                        <Text>{this.props.data.LoaiThongBao === 1 ? ' muốn bạn theo dõi sức khỏe' : this.props.data.LoaiThongBao === 2 ? ' gửi tin nhắn mới cho bạn' : ' đã chấp nhận được theo dõi'}</Text>
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -97,14 +113,24 @@ class NotifyScreen extends Component {
     _renderLayout = () => {
         if (!this.state.loading) {
             return (<FlatList
-                data={this.state.notifications}
+                data={e.state.notifications}
                 keyboardShouldPersistTaps='always'
-                keyExtractor={e => e.MaBenhNhan}
+                keyExtractor={e => e.MaTaiKhoanChinh}
                 renderItem={({ item }) => <NotiCard
                     data={item}
                     navigation={this.props.navigation}
                 />}
             />)
+        }
+    }
+
+    _renderNoNoti = () => {
+        if (this.state.notifications.length < 1) {
+            return (
+                <View style={{ alignItems: 'center' }}>
+                    <Text>Chưa có thông báo</Text>
+                </View>
+            )
         }
     }
 
@@ -116,9 +142,7 @@ class NotifyScreen extends Component {
                         <Text style={{ fontSize: 20, color: 'white' }}>Thông báo</Text>
                     </View>
                 </View>
-                {(this.state.notifications.length < 1) ? <View style={{ alignItems: 'center' }}>
-                    <Text>Chưa có thông báo</Text>
-                </View> : <Text></Text>}
+                {this._renderNoNoti()}
                 {this._renderLayout()}
             </View>
         );

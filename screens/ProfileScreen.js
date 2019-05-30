@@ -8,6 +8,7 @@ import { Button, ListItem, Avatar, Divider, Card } from 'react-native-elements';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ImagePicker from 'react-native-image-picker';
 import AsyncStorage from '@react-native-community/async-storage';
+import Icon from 'react-native-vector-icons/FontAwesome5'
 import axios from 'axios';
 
 class ProfileScreen extends Component {
@@ -20,6 +21,13 @@ class ProfileScreen extends Component {
         }
         this._bootstrapAsync();
     }
+
+    static navigationOptions = {
+        drawerLabel: 'HomeScreen',
+        drawerIcon: ({ tintColor }) => (
+            <Icon name='search' size={20} color='black' />
+        ),
+    };
 
     _bootstrapAsync = async () => {
         const userId = await AsyncStorage.getItem('UserId');

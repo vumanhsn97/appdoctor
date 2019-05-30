@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 import * as actions from '../actions';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
+import { Avatar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 class CardPatient extends Component {
@@ -28,7 +29,14 @@ class CardPatient extends Component {
                     justifyContent: 'space-between',
                     backgroundColor: back_color,
                 }}>
-                    <Image source={{uri: this.props.avatar }} style={style.avatar} />
+                    <Avatar
+                        rounded
+                        size='medium'
+                        title={this.props.name ? this.props.name[this.props.name.lastIndexOf(' ') + 1] : ''}
+                        activeOpacity={0.7}
+                        containerStyle={ style.avatar }
+                        source={{ uri: this.props.avatar }}
+                    />
                     <View>
                         <Text style={style.name}>{this.props.name}</Text>
                         <View style={{ flexDirection: 'row', marginTop: 7 }}>

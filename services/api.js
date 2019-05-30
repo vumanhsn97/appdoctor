@@ -69,7 +69,21 @@ export default () => {
                     }
                     return null
                 })
-        }
+        },
+        updateSeeing: (info) => {
+            return axiosPost(baseURL + `chatnotifications/update-seeing-messages`, {
+              MaTaiKhoan: info.MaTaiKhoan,
+              LoaiTaiKhoan: info.LoaiTaiKhoan,
+              MaTaiKhoanLienQuan: info.MaTaiKhoanLienQuan,
+              LoaiTaiKhoanLienQuan: info.LoaiTaiKhoanLienQuan
+            })
+            .then((res) => {
+                if(res.data.status === 'success'){
+                  return res.data.status
+                }
+                return null
+            })
+          },
     }
     return services
 }

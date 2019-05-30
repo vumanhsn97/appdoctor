@@ -182,10 +182,38 @@ export default class ChatScreen extends Component {
                 });
             }
         });
+
+        socket.on('not seen message', async () => {
+            
+            const info = {
+                MaTaiKhoan: this.state.receiverID,
+                LoaiNguoiChinh: 1,
+                MaTaiKhoanLienQuan: this.state.myID,
+                TenNguoiLienQuan: this.props.navigation.getParam('data').HoTen,
+                AvatarNguoiLienQuan: this.props.navigation.getParam('data').Avatar,
+                LoaiNguoiLienQuan: 2,
+                LoaiThongBao: 2    // Thông báo có tin nhắn mới từ người khác
+            }
+            await socket.emit('create notifications', info);
+            const info2 = {
+                MaNguoiGui: this.state.myID,
+                LoaiNguoiGui: 1,
+                MaNguoiNhan: this.state.receiverID,
+                LoaiNguoiNhan: 2,
+                updateList: true,
+            }
+            await socket.emit('update relationship', info2);
+        });
     }
 
     componentWillUnmount() {
         this._isMounted = false;
+        this.apiChat.updateSeeing({
+            MaTaiKhoan: this.state.myID,
+            LoaiTaiKhoan: 2,
+            MaTaiKhoanLienQuan: this.state.receiverID,
+            LoaiTaiKhoanLienQuan: 1
+        })
     }
 
     async submitChatMessage() {

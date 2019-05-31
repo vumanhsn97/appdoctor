@@ -85,7 +85,21 @@ export default () => {
             })
           },
         logout: () => {
-            return axiosPost(baseURL + 'log-out')
+            return axiosPost(baseURL + 'doctors/log-out')
+        },
+        changeBacSiPassword: (info) => {
+            return axiosPost(baseURL + `doctors/change-password`, {
+                MaBacSi: info.MaBacSi,
+                NewPassword: info.NewPassword,
+                OldPassword: info.OldPassword
+            })
+                .then((res) => {
+                    // if (res.data.status === 'success') {
+                    //     return res.data.status
+                    // }
+                    // return null
+                    return res.data
+                })
         }
     }
     return services

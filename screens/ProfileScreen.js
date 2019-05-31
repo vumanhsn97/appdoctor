@@ -155,8 +155,9 @@ class ProfileScreen extends Component {
         }
     }
 
-    updateFullName = () => {
-        
+    updateFullName = async () => {
+        await this.props.updateMyProfile('name', this.state.HoTen);
+        this.setState({isVisibleEditNameScreen: false})
     }
 
     _renderView = () => {
@@ -241,7 +242,7 @@ class ProfileScreen extends Component {
                             fontSize: 28,
                             color: "#696969",
                             fontWeight: '600',
-                        }}>{this.state.HoTen}</Text>
+                        }}>{this.state.HoTen}&nbsp;<AntDesign name='edit' size={25} color='rgba(74, 195, 180, 1)'></AntDesign></Text>
                         <Text style={{
                             fontSize: 16,
                             color: "#00BFFF",

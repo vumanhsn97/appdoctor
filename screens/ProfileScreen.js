@@ -4,9 +4,10 @@ import CardItemProfile from '../components/CardItemProfile';
 import MyListCard from '../components/MyListCard';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import { Button, ListItem, Avatar, Divider, Card } from 'react-native-elements';
+import { Button, ListItem, Avatar, Divider, Card, Overlay, Input } from 'react-native-elements';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ImagePicker from 'react-native-image-picker';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import axios from 'axios';
@@ -19,7 +20,12 @@ class ProfileScreen extends Component {
         this.state = {
             image: "",
             loading: false,
-            profile: {}
+            profile: {},
+            isVisiblePasswordScreen: false,
+            isVisibleEditNameScreen: false,
+            typePassword: "",
+            newPassword: "",
+            HoTen: ""
         }
         this._bootstrapAsync();
     }
@@ -34,16 +40,15 @@ class ProfileScreen extends Component {
     _bootstrapAsync = async () => {
         const userId = await AsyncStorage.getItem('UserId');
         const password = await AsyncStorage.getItem('Password');
-        await axios.post(api + 'doctors/log-in', {
+        await axios.get(api + 'doctors/find-doctor-by-id', {
             MaBacSi: userId,
-            Password: password
         })
             .then(async (response) => {
                 if (response.data.status == 'success') {
                     let data = response.data.doctor;
                     if (data.GioiTinh !== null) data.GioiTinh = true;
                     this.props.loadMyProfile(data);
-                    this.setState({ profile: response.data.doctor, loading: true });
+                    this.setState({ profile: response.data.doctor, loading: true, HoTen: response.data.doctor.HoTen });
                 }
             })
             .catch(function (error) {
@@ -103,10 +108,114 @@ class ProfileScreen extends Component {
         
       };
 
+       // isMatchingPassword = async () => {
+    //     const password = await AsyncStorage.getItem('Password');
+    //     if (SHA256(password) == SHA256(this.state.typePassword)) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
+    onUpdatePassword = async () => {
+        //Thuc hien doi mat khau
+        var doctor = {
+            MaBacSi: this.state.profile.MaBacSi,
+            NewPassword: this.state.newPassword,
+            OldPassword: this.state.typePassword
+        };
+        //Update xuống DB
+        await this.apiService.changeBacSiPassword(doctor)
+            .then((result) => {
+                if (result.status === "success") {
+                    // Cập nhật thành công
+                    alert("Cập nhật mật khẩu thành công!");
+                    this.setState({
+                        isVisiblePasswordScreen: false
+                    })
+                }
+                else if (result.status === "failed") {
+                    if (result.message_error === "Mật khẩu cũ không đúng")
+                    alert("Mật khẩu cũ không đúng! Vui lòng kiểm tra lại!");
+                }
+            })
+    }
+
+    changePassword = () => {
+        if (this.state.typePassword == "" || this.state.newPassword == "") {
+            alert("Mật khẩu không được rỗng!");
+        } else {
+            // if (this.isMatchingPassword()) {
+            //     this.onUpdatePassword();
+            // } else {
+            //     alert("Mật khẩu cũ không đúng! Vui lòng kiểm tra lại!");
+            // }
+            this.onUpdatePassword();
+        }
+    }
+
+    updateFullName = async () => {
+        await this.props.updateMyProfile('name', this.state.HoTen);
+        this.setState({isVisibleEditNameScreen: false})
+    }
+
+
     _renderView = () => {
         if (this.state.loading) {
             return (
                 <ScrollView >
+                    <Overlay isVisible={this.state.isVisibleEditNameScreen}
+                        borderRadius={10}
+                        height={200}
+                        onBackdropPress={() => { this.setState({ isVisibleEditNameScreen: false }) }}>
+                        <ScrollView>
+                            <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginBottom: 25 }}>Sửa tên</Text>
+                            <View style={{
+                                flex: 1,
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                marginHorizontal: 20,
+                            }}>
+                                <Input autoCapitalize='words' onChangeText={(text) => this.setState({ HoTen: text })} placeholder='Nhập tên của bạn'>{this.state.HoTen}</Input>
+                            </View>
+                            <Button
+                                type='outline'
+                                title="Cập nhật"
+                                buttonStyle={{ width: 120, alignSelf: 'center', marginTop: 20 }}
+                                onPress={() => this.updateFullName()}
+                            />
+                        </ScrollView>
+                    </Overlay>
+                    <Overlay isVisible={this.state.isVisiblePasswordScreen}
+                        borderRadius={10}
+                        height={250}>
+                        <ScrollView>
+                            <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginBottom: 25 }}>Đổi mật khẩu</Text>
+                            <Input onChangeText={(text) => this.setState({ typePassword: text })} placeholder='Nhập mật khẩu cũ' secureTextEntry={true}></Input>
+                            <Input onChangeText={(text) => this.setState({ newPassword: text })} placeholder='Nhập mật khẩu mới' secureTextEntry={true}></Input>
+                            <View style={{
+                                flex: 1,
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                marginTop: 10
+                            }}>
+                                <Button
+                                    type='outline'
+                                    title="Đồng ý"
+                                    buttonStyle={{ width: 120 }}
+                                    onPress={() => this.changePassword()}
+                                />
+                                <Button
+                                    type='outline'
+                                    title="Hủy"
+                                    buttonStyle={{ width: 120 }}
+                                    onPress={() => this.setState({ isVisiblePasswordScreen: false })}
+                                />
+                            </View>
+                        </ScrollView>
+                    </Overlay>
+
+
                     <Avatar
                         activeOpacity={0.7}
                         containerStyle={{ height: 120, width: '100%' }}
@@ -129,12 +238,12 @@ class ProfileScreen extends Component {
                         onEditPress={() => this.changeImage()}
                     />
                     <View style={{ marginTop: 40, alignItems: 'center' }}>
-                        <Text style={{
+                        <Text onPress={() => { this.setState({ isVisibleEditNameScreen: true }) }} style={{
                             marginTop: 10,
                             fontSize: 28,
                             color: "#696969",
                             fontWeight: '600',
-                        }}>{this.state.profile.HoTen}</Text>
+                        }}>{this.state.HoTen}&nbsp;<AntDesign name='edit' size={25} color='rgba(74, 195, 180, 1)'></AntDesign></Text>
                         <Text style={{
                             fontSize: 16,
                             color: "#00BFFF",
@@ -261,6 +370,12 @@ class ProfileScreen extends Component {
                         }}
                     >
                         <Divider />
+                        <TouchableOpacity onPress = { () => { this.setState({ isVisiblePasswordScreen: true }) }}>
+                            <View style={{ flex: 1, flexDirection: 'row', padding: 10, alignItems: "center" }}>
+                                <MaterialCommunityIcons name='textbox-password' size={20}></MaterialCommunityIcons>
+                                <Text style={{ marginLeft: 10, fontSize: 18, color: 'black' }}>Đổi mật khẩu</Text>
+                            </View>
+                        </TouchableOpacity>
                         <TouchableOpacity onPress = { () => { this._signOutAsync() }}>
                             <View style={{ flex: 1, flexDirection: 'row', padding: 10, alignItems: "center" }}>
                                 <AntDesign name='logout' size={20} />

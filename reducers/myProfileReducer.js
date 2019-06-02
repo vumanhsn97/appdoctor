@@ -26,7 +26,9 @@ export default function(state = data, actions) {
             if (actions.key == 'speciality') {
                 d.ChuyenMon = actions.value
             }
-            console.log(d);
+            if (actions.key == 'name') {
+                d.HoTen = actions.value
+            }
             axios.post(api + 'doctors/update-profile', d)
                 .then(async (response) => {
                     if (response.data.status == 'success') {

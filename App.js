@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, Text, View, StyleSheet } from 'react-native';
 import { Provider, connect } from 'react-redux';
-import { createAppContainer, createStackNavigator, createMaterialTopTabNavigator, createSwitchNavigator } from 'react-navigation';
+import { createAppContainer, createStackNavigator, createMaterialTopTabNavigator, createSwitchNavigator, createBottomTabNavigator } from 'react-navigation';
 import { createStore, combineReducers } from 'redux';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import store from './store';
@@ -67,12 +67,7 @@ const LoginStack = createStackNavigator({
 })
 
 const HomeStack = createStackNavigator({
-  HomeScreen: {
-    screen: HomeScreen,
-    navigationOptions: () => ({
-      header: null,
-    }),
-  },
+  HomeScreen: HomeScreen,
 });
 
 const MessStack = createStackNavigator({
@@ -102,72 +97,69 @@ const ProfileStack = createStackNavigator({
   },
 });
 
-getNotifi = async () => {
-  const userId = await AsyncStorage.getItem('UserId');
-  socket.emit("join room", {
-    LoaiTaiKhoan: 2,
-    MaTaiKhoan: userId
-  })
-  socket.emit('get notifications number', {
-    MaTaiKhoan: userId,
-    LoaiTaiKhoan: 2
-  })
-  socket.on('get notifications number', (info) => {
-    return info;
+
+const TabNavigator = createBottomTabNavigator({
+  HomeStack: HomeScreen,
+  MessStack: MessScreen,
+  NotifyStack: {
+    screen: NotifyScreen,
+    navigationOptions: (navigation) => ({
+      tabBarIcon: ({ focused, tintColor }) => {
+        return(
+          focused ?
+            <View>
+                <Icon name='bell' size={20} color='rgba(54, 175, 160, 1)' />
+                <Text style={{ position: 'absolute', bottom: 10, left: 15, color: 'red' }}>{navigation.screenProps.notifi === 0 ? '' : navigation.screenProps.notifi}</Text>
+            </View>
+            : <View>
+                <Icon name='bell' size={20} color='rgba(54, 175, 160, 0.5)' />
+                <Text style={{ position: 'absolute', bottom: 10, left: 15, color: 'red' }}>{navigation.screenProps.notifi === 0 ? '' : navigation.screenProps.notifi}</Text>
+            </View>
+        )
+      }
+    })
+  },
+  ProfileStack: ProfileScreen
+},{
+  defaultNavigationOptions: ({ navigation }) => ({
+    tabBarIcon: ({ focused, tintColor }) => {
+      let iconName;
+      const { routeName } = navigation.state;
+      if (routeName === 'HomeStack') {
+        iconName = 'address-book';
+      } else if (routeName === 'MessStack') {
+        iconName = 'comments';
+      } else if (routeName === 'NotifyStack') {
+        iconName = 'bell';
+      } else if (routeName === 'ProfileStack') {
+        iconName = 'user';
+      }
+      return (
+        <View>
+          <Icon size={20} color={tintColor} name={iconName} />
+        </View>
+      )
+    },
+    title: 'hheaea',
+    swipeEnabled: false,
+    tabBarPosition: 'bottom',
+    tabBarOptions: {
+      activeTintColor: 'rgba(54, 175, 160, 1)',
+      inactiveTintColor: 'rgba(54, 175, 160, 0.5)',
+      indicatorStyle: {
+        opacity: 0
+      },
+      style: {
+        backgroundColor: 'white',
+        borderTopColor: '#EFEFEF',
+        borderTopWidth: 1,
+      },
+      showLabel: false,
+      showIcon: true,
+    },
   })
 }
-
-const TabNavigator = createMaterialTopTabNavigator({
-  HomeStack: HomeStack,
-  MessStack: MessStack,
-  NotifyStack: NotifyStack,
-  ProfileStack: ProfileStack
-},
-  {
-    defaultNavigationOptions: ({ navigation }) => ({
-      tabBarIcon: ({ focused, tintColor }) => {
-        let iconName;
-        const { routeName } = navigation.state;
-        if (routeName === 'HomeStack') {
-          iconName = 'address-book';
-        } else if (routeName === 'MessStack') {
-          iconName = 'comments';
-        } else if (routeName === 'NotifyStack') {
-          iconName = 'bell';
-        } else if (routeName === 'ProfileStack') {
-          iconName = 'user';
-        }
-        this.getNotifi();
-        return (
-          <View>
-            {iconName != 'befll' ? <Icon size={20} color={tintColor} name={iconName} /> :
-              <View>
-                <Icon size={20} color={tintColor} name={iconName} />
-                <Text style={{ position: 'absolute', bottom: 10, left: 15, color: 'red' }}>2</Text>
-              </View>
-            }
-          </View>
-        )
-      },
-      title: 'hheaea',
-      swipeEnabled: false,
-      tabBarPosition: 'bottom',
-      tabBarOptions: {
-        activeTintColor: 'rgba(54, 175, 160, 1)',
-        inactiveTintColor: 'rgba(54, 175, 160, 0.5)',
-        indicatorStyle: {
-          opacity: 0
-        },
-        style: {
-          backgroundColor: 'white',
-          borderTopColor: '#EFEFEF',
-          borderTopWidth: 1,
-        },
-        showLabel: false,
-        showIcon: true,
-      },
-    })
-  });
+)
 
 const TabScreen = createStackNavigator({
   TabNavigator: {
@@ -248,11 +240,28 @@ const MainNavigator = createAppContainer(createSwitchNavigator({
   }));
 
 export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      notifi: 0
+    }
+  }
+
+  updateNotification = (data) => {
+      this.setState({notifi:data});
+  }
+
+
   render() {
     return (
       <Provider store={store}>
-        <MainNavigator 
+        <MainNavigator
           TabNavigator={this.TabNavigator}
+          screenProps={{
+            ...this.state,
+            updateNotification: this.updateNotification,
+          }}
         />
       </Provider>
     );

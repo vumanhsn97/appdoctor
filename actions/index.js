@@ -10,7 +10,8 @@ import {INCREASE,
         LOAD_CHAT,
         SEND,
         UPDATE_MY_PROFILE,
-        LOAD_MY_PROFILE
+        LOAD_MY_PROFILE,
+        UPDATE_NOTIFICATION
         } from './type';
 
 export const counterIncrease = () => ({type:INCREASE});
@@ -40,5 +41,10 @@ export const updateMyProfile = ( key, value) => ({
 
 export const loadMyProfile = (data) => ({
     type: LOAD_MY_PROFILE,
+    data
+})
+
+export const updateNotificaton = (data) => ({
+    type: UPDATE_NOTIFICATION,
     data
 })

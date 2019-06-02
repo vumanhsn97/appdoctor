@@ -36,7 +36,7 @@ class HomeScreen extends Component {
             MaTaiKhoan: userId
         })
 
-        axios(api + 'follows/list-doctor-following', {
+        axios.get(api + 'follows/list-doctor-following', {
             params: {
                 MaBacSi: userId
             }
@@ -56,27 +56,25 @@ class HomeScreen extends Component {
                 console.log(error)
             })
 
-        socket.on('update list notifications', (info) => {
-            if (info.id === 2) {
-                axios(api + 'follows/list-doctor-following', {
-                    params: {
-                        MaBacSi: userId
-                    }
-                }).then(response => {
-                    let data = response.data;
-                    if (data.status == 'success') {
-                        data = data.list_patients;
-                        this.setState({ patients: data, no: '' });
-                    } else {
-                        //AsyncStorage.clear();
-                        //this.props.navigation.navigate('LoginStack');
-                        this.setState({ patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
-                    }
+        socket.on('update list notifications', async(info) => {
+            axios(api + 'follows/list-doctor-following', {
+                params: {
+                    MaBacSi: await AsyncStorage.getItem('UserId')
+                }
+            }).then(response => {
+                let data = response.data;
+                if (data.status == 'success') {
+                    data = data.list_patients;
+                    this.setState({ patients: data, no: '' });
+                } else {
+                    //AsyncStorage.clear();
+                    //this.props.navigation.navigate('LoginStack');
+                    this.setState({ patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
+                }
+            })
+                .catch(error => {
+                    console.log(error)
                 })
-                    .catch(error => {
-                        console.log(error)
-                    })
-            }
         });
 
         socket.on('update relationship', (info) => {
@@ -124,7 +122,7 @@ class HomeScreen extends Component {
                 <FlatList
                     data={this.state.patients}
                     keyboardShouldPersistTaps='always'
-                    keyExtractor={e => e.id}
+                    keyExtractor={e => e.MaBenhNhan}
                     renderItem={({ item }) => <CardMess
                         item={item}
                         navigation={this.props.navigation}

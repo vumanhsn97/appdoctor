@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, Image, TouchableOpacity, FlatList, AppState } from 'react-native';
+import { NavigationEvents } from 'react-navigation'
 import * as actions from '../actions';
 import api from '../services/config';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -15,20 +16,26 @@ class NotifyScreen extends Component {
         super(props);
         this.state = {
             loading: true,
-            notifications: []
+            notifications: [],
+            numbernoti: 0
         }
     }
 
+    componentDidFocus() {
+        alert("hiei")
+    }
 
+    
 
     componentDidMount = async () => {
         const userId = await AsyncStorage.getItem('UserId');
+        this.props.screenProps.updateNotification(6);
         socket.emit("join room", {
             LoaiTaiKhoan: 2,
             MaTaiKhoan: userId
         })
         //AsyncStorage.clear();
-        socket.on('update list notifications', async(info) => {
+        socket.on('update list notifications', async (info) => {
             axios.get(api + 'notifications', {
                 params: {
                     MaTaiKhoan: await AsyncStorage.getItem('UserId'),
@@ -36,7 +43,7 @@ class NotifyScreen extends Component {
                 }
             }).then(response => {
                 let data = response.data;
-                console.log(data);
+                //console.log(data);
                 if (data.status == 'success') {
                     data = data.notifications;
                     this.setState({ notifications: data, loading: false });
@@ -45,6 +52,10 @@ class NotifyScreen extends Component {
                 .catch(error => {
                     console.log(error)
                 })
+            socket.emit('get notifications number', {
+                LoaiTaiKhoan: 2,
+                MaTaiKhoan: userId
+            })
         })
         axios.get(api + 'notifications', {
             params: {
@@ -61,6 +72,22 @@ class NotifyScreen extends Component {
             .catch(error => {
                 console.log(error)
             })
+        socket.on('get notifications number', (info) => {
+            this.props.screenProps.updateNotification(info);
+        })
+    }
+
+    updateSeen = async() => {
+        const userId = await AsyncStorage.getItem('UserId');
+        this.props.screenProps.updateNotification(0);
+        socket.emit("join room", {
+            LoaiTaiKhoan: 2,
+            MaTaiKhoan: userId
+        })
+        socket.emit('seen notifications', {
+            LoaiTaiKhoan: 2,
+            MaTaiKhoan: userId
+        })
     }
 
     _renderLayout = () => {
@@ -90,6 +117,9 @@ class NotifyScreen extends Component {
     render() {
         return (
             <View>
+                <NavigationEvents
+                    onWillFocus={payload => this.updateSeen()}
+                />
                 <View style={{ flexDirection: 'row', height: 60, borderBottomColor: '#EFEFEF', backgroundColor: 'rgba(54, 175, 160, 1)', alignItems: 'center' }}>
                     <View style={{ flex: 1, marginLeft: 5, marginRight: 5, alignItems: 'center' }}>
                         <Text style={{ fontSize: 20, color: 'white' }}>Thông báo</Text>

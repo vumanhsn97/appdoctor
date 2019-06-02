@@ -16,3 +16,6 @@ export const SEND = 'send';
 //MyProfileScreen
 export const LOAD_MY_PROFILE = 'load_my_profile';
 export const UPDATE_MY_PROFILE = 'update_my_profile';
+
+//Notificatons
+export const UPDATE_NOTIFICATION = 'update_notification';

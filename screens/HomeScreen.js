@@ -37,6 +37,15 @@ class HomeScreen extends Component {
             MaTaiKhoan: userId
         })
 
+        socket.emit('get notifications number', {
+            LoaiTaiKhoan: 2,
+            MaTaiKhoan: userId
+        })
+
+        socket.on('get notifications number', (info) => {
+            this.props.screenProps.updateNotification(info)
+        })
+
         axios(api + 'follows/list-doctor-following', {
             params: {
                 MaBacSi: userId
@@ -84,34 +93,6 @@ class HomeScreen extends Component {
         this.setState({ loading: true })
     }
 
-    static navigationOptions = {
-        drawerLabel: 'HomeScreen',
-        tabBarIcon: ({ focused, tintColor }) => {
-            let iconName;
-            const { routeName } = navigation.state;
-            if (routeName === 'HomeStack') {
-                iconName = 'search';
-            } else if (routeName === 'MessStack') {
-                iconName = 'comments';
-            } else if (routeName === 'NotifyStack') {
-                iconName = 'bell';
-            } else if (routeName === 'ProfileStack') {
-                iconName = 'user';
-            }
-            return (
-                <View>
-                    {iconName != 'befll' ? <Icon size={20} color={tintColor} name={iconName} /> :
-                        <View>
-                            <Icon size={20} color={tintColor} name={iconName} />
-                            <Text style={{ position: 'absolute', bottom: 10, left: 15, color: 'red' }}>2</Text>
-                        </View>
-                    }
-                </View>
-            )
-        },
-    };
-
-
     componentDidMount() {
         this.keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
@@ -121,6 +102,7 @@ class HomeScreen extends Component {
             'keyboardDidHide',
             this._keyboardDidHide,
         );
+        
     }
 
     componentWillUnmount() {
@@ -139,7 +121,9 @@ class HomeScreen extends Component {
 
     componentWillMount() {
         //const patientsData = this.props.patients;
-
+        this.props.navigation.setParams({
+            numbernoti: 10
+        });
     }
 
     searchPatient = ({ text }) => {
@@ -213,6 +197,7 @@ class HomeScreen extends Component {
         )
     }
 
+
     render() {
         return (
             <View style={{ flex: 1 }}>
@@ -223,7 +208,8 @@ class HomeScreen extends Component {
 }
 
 const mapStateToProps = state => ({
-    patients: state.patients
+    patients: state.patients,
+    noti: state.noti
 });
 
 export default connect(mapStateToProps, actions)(HomeScreen)

@@ -151,33 +151,8 @@ export default class ChatScreen extends Component {
             MaTaiKhoan: userId,
             LoaiTaiKhoan: 2,
         });
-        this.apiChat.getMessages(
-            { id: this.state.myID, type: 2 },
-            { id: this.state.receiverID, type: 1 },
-            this.state.page
-        ).then((msg) => {
-            let dataTemp = []
-            if (msg !== null && this._isMounted) {
-                // alert(JSON.parse(JSON.stringify(msg)))   
-                msg.map((item) => {
-                    // alert(JSON.stringify(item))
-                    let date = new Date(item.NgayGioGui)
-                    let temp = {
-                        MaNguoiGui: item.MaNguoiGui,
-                        LoaiNguoiGui: item.LoaiNguoiGui,
-                        MaNguoiNhan: item.MaNguoiNhan,
-                        LoaiNguoiNhan: item.LoaiNguoiNhan,
-                        NoiDung: item.NoiDung,
-                        NgayGioGui: date,
-                    }
-
-                    dataTemp.push(temp)
-                })
-            }
-            this.setState({
-                chatMessages: [...this.state.chatMessages, ...dataTemp]
-            }, () => { });
-        })
+        
+        this.loadMessages();
 
         socket.on('chat message', (msg) => {
             if (msg !== null) {
@@ -190,7 +165,7 @@ export default class ChatScreen extends Component {
 
         socket.on('not seen message', async () => {
             if (this.state.chated > 1) return;
-            axios.get(baseURL + 'doctors/find-doctor-by-id', {
+            await axios.get(baseURL + 'doctors/find-doctor-by-id', {
                 params: {
                     MaBacSi: await AsyncStorage.getItem('UserId')
                 }
@@ -265,6 +240,44 @@ export default class ChatScreen extends Component {
         }
     }
 
+    loadMessages = async () => {
+        this.apiChat.getMessages(
+            { id: this.state.myID, type: 2 },
+            { id: this.state.receiverID, type: 1 },
+            this.state.page
+        ).then((msg) => {
+            let dataTemp = []
+            if (msg !== null && this._isMounted) {
+                // alert(JSON.parse(JSON.stringify(msg)))   
+                msg.map((item) => {
+                    // alert(JSON.stringify(item))
+                    let date = new Date(item.NgayGioGui)
+                    let temp = {
+                        MaNguoiGui: item.MaNguoiGui,
+                        LoaiNguoiGui: item.LoaiNguoiGui,
+                        MaNguoiNhan: item.MaNguoiNhan,
+                        LoaiNguoiNhan: item.LoaiNguoiNhan,
+                        NoiDung: item.NoiDung,
+                        NgayGioGui: date,
+                    }
+
+                    dataTemp.push(temp)
+                })
+            }
+            this.setState({
+                chatMessages: [...this.state.chatMessages, ...dataTemp]
+            }, () => { });
+        })
+    }
+
+    handleLoadMore = () => {
+        this.setState({
+            page: this.state.page + 1
+        }, () => {
+            this.loadMessages();
+        })
+    }
+
     render() {
         return (
             <View style={styles.wrapper}>
@@ -273,6 +286,8 @@ export default class ChatScreen extends Component {
                     data={this.state.chatMessages}
                     renderItem={this._renderItem}
                     keyExtractor={this.keyExtractor}
+                    onEndReached={this.handleLoadMore}
+                    onEndReachedThreshold={0.001}
                     inverted
                 >
                 </FlatList>

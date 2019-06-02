@@ -4,11 +4,13 @@ import patientsReducer from './patientsReducer';
 import patientReducer from './patientReducer';
 import chatReducer from './chatReducer';
 import myProfileReducer from './myProfileReducer';
+import notiReducer from './notiReducer';
 
 export default combineReducers({
   count:counterReducer,
   patients:patientsReducer,
   patient:patientReducer,
   chat:chatReducer,
-  myProfile: myProfileReducer
+  myProfile: myProfileReducer,
+  noti: notiReducer
 });

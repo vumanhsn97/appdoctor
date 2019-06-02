@@ -48,10 +48,10 @@ class ProfileScreen extends Component {
         })
             .then(async (response) => {
                 if (response.data.status == 'success') {
-                    let data = response.data.doctor;
+                    let data = response.data.doctor[0];
                     if (data.GioiTinh !== null) data.GioiTinh = true;
                     this.props.loadMyProfile(data);
-                    this.setState({ profile: response.data.doctor, loading: true, HoTen: response.data.doctor.HoTen });
+                    this.setState({ profile: response.data.doctor[0], loading: true, HoTen: response.data.doctor[0].HoTen });
                 }
             })
             .catch(function (error) {

@@ -3,9 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import axios from 'axios';
 import api from '../services/config';
-import io from 'socket.io-client';
 import AsyncStorage from '@react-native-community/async-storage'
-const socket = io(api);
 
 
 class NotiCard extends Component {
@@ -14,28 +12,6 @@ class NotiCard extends Component {
         this.state = {
             highlight: this.props.data.DaXem == 0 ? true : false
         }
-    }
-
-    componentDidMount = async() => {
-        const userId = await AsyncStorage.getItem('UserId');
-        socket.emit("join room", {
-            LoaiTaiKhoan: 2,
-            MaTaiKhoan: userId
-        })
-        //AsyncStorage.clear();
-        socket.on('update list notifications', async(info) => {
-            axios.get(api + 'notifications', {
-                params: {
-                    MaTaiKhoan: await AsyncStorage.getItem('UserId'),
-                    LoaiNguoiChinh: 2
-                }
-            }).then(response => {
-                this.setState({ highlight: this.props.data.DaXem == 0 ? true : false })
-            })
-                .catch(error => {
-                    console.log(error)
-                })
-        })
     }
 
     onHandleClick = () => {

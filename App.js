@@ -261,6 +261,7 @@ export default class App extends React.Component {
           screenProps={{
             ...this.state,
             updateNotification: this.updateNotification,
+            socket: socket,
           }}
         />
       </Provider>

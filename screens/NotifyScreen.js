@@ -6,10 +6,8 @@ import api from '../services/config';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Avatar } from 'react-native-elements';
 import axios from 'axios';
-import io from 'socket.io-client';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import NotiCard from '../components/NotiCard';
-const socket = io(api);
 
 class NotifyScreen extends Component {
     constructor(props) {
@@ -29,13 +27,9 @@ class NotifyScreen extends Component {
 
     componentDidMount = async () => {
         const userId = await AsyncStorage.getItem('UserId');
-        this.props.screenProps.updateNotification(6);
-        socket.emit("join room", {
-            LoaiTaiKhoan: 2,
-            MaTaiKhoan: userId
-        })
+        
         //AsyncStorage.clear();
-        socket.on('update list notifications', async (info) => {
+        this.props.screenProps.socket.on('update list notifications', async (info, id) => {
             axios.get(api + 'notifications', {
                 params: {
                     MaTaiKhoan: await AsyncStorage.getItem('UserId'),
@@ -52,7 +46,7 @@ class NotifyScreen extends Component {
                 .catch(error => {
                     console.log(error)
                 })
-            socket.emit('get notifications number', {
+            this.props.screenProps.socket.emit('get notifications number', {
                 LoaiTaiKhoan: 2,
                 MaTaiKhoan: userId
             })
@@ -72,7 +66,7 @@ class NotifyScreen extends Component {
             .catch(error => {
                 console.log(error)
             })
-        socket.on('get notifications number', (info) => {
+        this.props.screenProps.socket.on('get notifications number', (info) => {
             this.props.screenProps.updateNotification(info);
         })
     }
@@ -80,11 +74,8 @@ class NotifyScreen extends Component {
     updateSeen = async() => {
         const userId = await AsyncStorage.getItem('UserId');
         this.props.screenProps.updateNotification(0);
-        socket.emit("join room", {
-            LoaiTaiKhoan: 2,
-            MaTaiKhoan: userId
-        })
-        socket.emit('seen notifications', {
+        
+        this.props.screenProps.socket.emit('seen notifications', {
             LoaiTaiKhoan: 2,
             MaTaiKhoan: userId
         })
@@ -95,10 +86,11 @@ class NotifyScreen extends Component {
             return (<FlatList
                 data={this.state.notifications}
                 keyboardShouldPersistTaps='always'
-                keyExtractor={(item, index) => 'key' + index}
+                keyExtractor={e => e.Id.toString()}
                 renderItem={({ item }) => <NotiCard
                     data={item}
                     navigation={this.props.navigation}
+                    socket={this.props.screenProps.socket}
                 />}
             />)
         }

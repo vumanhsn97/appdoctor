@@ -7,8 +7,6 @@ import * as actions from '../actions';
 import api from '../services/config';
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
-import io from 'socket.io-client';
-const socket = io(api);
 
 YellowBox.ignoreWarnings([
     'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
@@ -32,17 +30,17 @@ class HomeScreen extends Component {
     _bootstrapAsync = async () => {
         const userId = await AsyncStorage.getItem('UserId');
         //AsyncStorage.clear();
-        socket.emit("join room", {
+        this.props.screenProps.socket.emit("join room", {
             LoaiTaiKhoan: 2,
             MaTaiKhoan: userId
         })
 
-        socket.emit('get notifications number', {
+        this.props.screenProps.socket.emit('get notifications number', {
             LoaiTaiKhoan: 2,
             MaTaiKhoan: userId
         })
 
-        socket.on('get notifications number', (info) => {
+        this.props.screenProps.socket.on('get notifications number', (info) => {
             this.props.screenProps.updateNotification(info)
         })
 
@@ -67,7 +65,7 @@ class HomeScreen extends Component {
                 console.log(error)
             })
 
-        socket.on("update relationship", (data) => {
+        this.props.screenProps.socket.on("update relationship", (data) => {
             axios(api + 'follows/list-doctor-following', {
                 params: {
                     MaBacSi: data.LoaiNguoiGui == 2 ? data.MaNguoiGui : data.MaNguoiNhan

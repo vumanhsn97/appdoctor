@@ -4,8 +4,6 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Avatar } from 'react-native-elements';
 import api from '../services/config';
 import axios from 'axios';
-import io from 'socket.io-client';
-const socket = io(api);
 
 export default class CardMess extends Component {
     constructor(props) {

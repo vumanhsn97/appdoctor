@@ -5,10 +5,8 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as actions from '../actions';
 import CardMess from '../components/CardMess';
 import AsyncStorage from '@react-native-community/async-storage';
-import io from 'socket.io-client';
 import api from '../services/config';
 import axios from 'axios';
-const socket = io(api);
 
 class HomeScreen extends Component {
     constructor(props) {
@@ -31,10 +29,7 @@ class HomeScreen extends Component {
     componentDidMount = async () => {
         const userId = await AsyncStorage.getItem('UserId');
         //AsyncStorage.clear();
-        socket.emit("join room", {
-            LoaiTaiKhoan: 2,
-            MaTaiKhoan: userId
-        })
+        
 
         axios.get(api + 'follows/list-doctor-following', {
             params: {
@@ -56,7 +51,7 @@ class HomeScreen extends Component {
                 console.log(error)
             })
 
-        socket.on('update list notifications', async(info) => {
+        this.props.screenProps.socket.on('update list notifications', async(info) => {
             axios(api + 'follows/list-doctor-following', {
                 params: {
                     MaBacSi: await AsyncStorage.getItem('UserId')
@@ -77,7 +72,7 @@ class HomeScreen extends Component {
                 })
         });
 
-        socket.on('update relationship', (info) => {
+        this.props.screenProps.socket.on('update relationship', (info) => {
             axios(api + 'follows/list-doctor-following', {
                 params: {
                     MaBacSi: userId
@@ -126,6 +121,7 @@ class HomeScreen extends Component {
                     renderItem={({ item }) => <CardMess
                         item={item}
                         navigation={this.props.navigation}
+                        socket={this.props.screenProps.socket}
                     />}
 
                 />

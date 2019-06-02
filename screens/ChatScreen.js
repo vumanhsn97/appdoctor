@@ -4,7 +4,6 @@ import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Avatar } from "react-native-elements";
 import { createAppContainer, createStackNavigator, StackActions, NavigationActions } from 'react-navigation';
-import socketIOClient from 'socket.io-client';
 import { TextInput } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-community/async-storage';
 import ApiChat from '../services/api';
@@ -12,8 +11,6 @@ import baseURL from '../services/config'
 import { importDeclaration } from '@babel/types';
 import axiosFetch from '../services/axios-fetch';
 import axios from 'axios';
-
-const socket = socketIOClient(baseURL)
 
 YellowBox.ignoreWarnings([
     'Warning: Async Storage has been extracted from react-native core'
@@ -147,14 +144,14 @@ export default class ChatScreen extends Component {
         this.setState({
             myID: userId
         });
-        socket.emit('join room', {
+        this.props.screenProps.socket.emit('join room', {
             MaTaiKhoan: userId,
             LoaiTaiKhoan: 2,
         });
         
         this.loadMessages();
 
-        socket.on('chat message', (msg) => {
+        this.props.screenProps.socket.on('chat message', (msg) => {
             if (msg !== null) {
                 msg.NgayGioGui = msg.DateValue
                 this.setState({
@@ -163,37 +160,41 @@ export default class ChatScreen extends Component {
             }
         });
 
-        socket.on('not seen message', async () => {
+        this.props.screenProps.socket.on('not seen message', async () => {
             if (this.state.chated > 1) return;
-            await axios.get(baseURL + 'doctors/find-doctor-by-id', {
-                params: {
-                    MaBacSi: await AsyncStorage.getItem('UserId')
-                }
-            }).then(async (response) => {
-                const info = {
-                    MaTaiKhoan: this.state.receiverID,
-                    LoaiNguoiChinh: 1,
-                    MaTaiKhoanLienQuan: this.state.myID,
-                    TenNguoiLienQuan: response.data.doctor[0].HoTen,
-                    AvatarNguoiLienQuan: response.data.doctor[0].Avatar,
-                    LoaiNguoiLienQuan: 2,
-                    LoaiThongBao: 2    // Thông báo có tin nhắn mới từ người khác
-                }
-                
-                await socket.emit('create notifications', info);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-            
-            const info2 = {
-                MaNguoiGui: this.state.myID,
-                LoaiNguoiGui: 2,
-                MaNguoiNhan: this.state.receiverID,
-                LoaiNguoiNhan: 1,
-                updateList: true,
+            if (this._isMounted) {
+                await axios.get(baseURL + 'doctors/find-doctor-by-id', {
+                    params: {
+                        MaBacSi: await AsyncStorage.getItem('UserId')
+                    }
+                }).then(async (response) => {
+                    const info = {
+                        MaTaiKhoan: this.state.receiverID,
+                        LoaiNguoiChinh: 1,
+                        MaTaiKhoanLienQuan: this.state.myID,
+                        TenNguoiLienQuan: response.data.doctor[0].HoTen,
+                        AvatarNguoiLienQuan: response.data.doctor[0].Avatar,
+                        LoaiNguoiLienQuan: 2,
+                        LoaiThongBao: 2    // Thông báo có tin nhắn mới từ người khác
+                    }
+                    
+                    await this.props.screenProps.socket.emit('create notifications', info);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
             }
-            await socket.emit('update relationship', info2);
+            if (this._isMounted) {
+                const info2 = {
+                    MaNguoiGui: this.state.myID,
+                    LoaiNguoiGui: 2,
+                    MaNguoiNhan: this.state.receiverID,
+                    LoaiNguoiNhan: 1,
+                    updateList: true,
+                }
+                await this.props.screenProps.socket.emit('update relationship', info2);
+            }
+            
         });
     }
 
@@ -224,7 +225,7 @@ export default class ChatScreen extends Component {
             },
             txtInput: '',
         }, async () => {
-            await socket.emit('chat message', this.state.chatMessage);
+            await this.props.screenProps.socket.emit('chat message', this.state.chatMessage);
         });
     }
 

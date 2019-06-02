@@ -4,8 +4,6 @@ import { Divider, Avatar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
 import api from '../services/config';
-import io from 'socket.io-client';
-const socket = io(api);
 import AsyncStorage from '@react-native-community/async-storage';
 
 class InforCard extends Component {
@@ -36,10 +34,7 @@ class PatientProfile extends Component {
         this.setState({ loading: true });
         const id = this.props.navigation.getParam('id', 'nope');
         const userId = await AsyncStorage.getItem('UserId');
-        socket.emit("join room", {
-            LoaiTaiKhoan: 2,
-            MaTaiKhoan: userId
-        })
+        
 
         axios.get(api + 'follows/check-relationship-of-patient-with-doctor', {
             params: {
@@ -103,7 +98,7 @@ class PatientProfile extends Component {
                 console.log(error)
             })
 
-        socket.on("update relationship", (data) => {
+        this.props.screenProps.socket.on("update relationship", (data) => {
 
             axios.get(api + 'follows/check-relationship-of-patient-with-doctor', {
                 params: {
@@ -155,7 +150,7 @@ class PatientProfile extends Component {
             }).catch(error => {
                 console.log(error)
             })
-            socket.emit("create notifications", {
+            this.props.screenProps.socket.emit("create notifications", {
                 MaTaiKhoan: this.state.data.MaBenhNhan,
                 LoaiNguoiChinh: 1,
                 MaTaiKhoanLienQuan: this.state.doctor.MaBacSi,
@@ -178,7 +173,7 @@ class PatientProfile extends Component {
             }).catch(error => {
                 console.log(error)
             })
-            socket.emit("create notifications", {
+            this.props.screenProps.socket.emit("create notifications", {
                 MaTaiKhoan: this.state.data.MaBenhNhan,
                 LoaiNguoiChinh: 1,
                 MaTaiKhoanLienQuan: this.state.doctor.MaBacSi,
@@ -207,7 +202,7 @@ class PatientProfile extends Component {
             })
         }
 
-        socket.emit("update relationship", {
+        this.props.screenProps.socket.emit("update relationship", {
             MaNguoiGui: userId,
             LoaiNguoiGui: 2,
             MaNguoiNhan: this.state.data.MaBenhNhan,
@@ -229,7 +224,7 @@ class PatientProfile extends Component {
         }).catch(error => {
             console.log(error)
         })
-        socket.emit("update relationship", {
+        this.props.screenProps.socket.emit("update relationship", {
             MaNguoiGui: userId,
             LoaiNguoiGui: 2,
             MaNguoiNhan: this.state.data.MaBenhNhan,

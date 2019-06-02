@@ -8,7 +8,6 @@ import { Button, ListItem, Avatar, Divider, Card, Overlay, Input } from 'react-n
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from 'react-native-image-picker';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import axios from 'axios';
@@ -42,7 +41,10 @@ class ProfileScreen extends Component {
         const userId = await AsyncStorage.getItem('UserId');
         const password = await AsyncStorage.getItem('Password');
         await axios.get(api + 'doctors/find-doctor-by-id', {
-            MaBacSi: userId,
+            params: {
+                MaBacSi: userId,
+            }
+            
         })
             .then(async (response) => {
                 if (response.data.status == 'success') {

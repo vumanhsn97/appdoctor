@@ -6,6 +6,7 @@ import * as actions from '../actions';
 import { connect } from 'react-redux';
 import { Button, ListItem, Avatar, Divider, Card, Overlay, Input } from 'react-native-elements';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from 'react-native-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -159,7 +160,6 @@ class ProfileScreen extends Component {
         this.setState({isVisibleEditNameScreen: false})
     }
 
-
     _renderView = () => {
         if (this.state.loading) {
             return (
@@ -214,7 +214,6 @@ class ProfileScreen extends Component {
                             </View>
                         </ScrollView>
                     </Overlay>
-
 
                     <Avatar
                         activeOpacity={0.7}

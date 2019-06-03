@@ -42,19 +42,19 @@ export default class CardMess extends Component {
                     margin: '3%',
                     marginTop: 5,
                     marginBottom: 5,
-                    height: 70,
+                    height: 50,
                     borderRadius: 10,
                     flexDirection: 'row',
                     backgroundColor: back_color,
                 }}>
                     <Avatar
                         rounded
-                        size='medium'
+                        size='small'
                         title={this.props.item.HoTen ? this.props.item.HoTen[this.props.item.HoTen.lastIndexOf(' ') + 1] : ''}
                         containerStyle={style.avatar}
                         source={{ uri: 'data:image/jpeg;base64,' + this.props.item.Avatar }}
                     />
-                    <View style={{ flex: 1 }}>
+                    <View style={{ flex: 1, justifyContent: 'center' }}>
                         <Text style={style.name}>{this.props.item.HoTen}</Text>
                     </View>
                 </View>
@@ -66,8 +66,8 @@ export default class CardMess extends Component {
 const style = StyleSheet.create({
     avatar: {
         margin: 5,
-        height: 60,
-        width: 60,
+        height: 40,
+        width: 40,
         borderRadius: 60 / 2,
         justifyContent: 'flex-start'
     },
@@ -78,8 +78,8 @@ const style = StyleSheet.create({
         flex: 1
     },
     name: {
-        fontSize: 20,
-        marginTop: 5,
+        fontSize: 18,
+        marginLeft: 10,
         color: 'black',
         fontFamily: 'Arial'
     },

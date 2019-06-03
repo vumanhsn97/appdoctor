@@ -396,7 +396,7 @@ class ProfileScreen extends Component {
 
     render() {
         return (
-            <View>
+            <View style={{ flex: 1 }}>
                 {this._renderView()}
             </View>
         )

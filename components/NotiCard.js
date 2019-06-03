@@ -56,7 +56,7 @@ class NotiCard extends Component {
                     <Avatar
                         rounded
                         size='medium'
-                        title={this.props.data.HoTen ? this.props.data.HoTen[this.props.data.HoTen.lastIndexOf(' ') + 1] : ''}
+                        title={this.props.data.TenNguoiLienQuan ? this.props.data.TenNguoiLienQuan[this.props.data.TenNguoiLienQuan.lastIndexOf(' ') + 1] : ''}
                         activeOpacity={0.7}
                         containerStyle={{ width: 40, height: 40, borderRadius: 40 / 2 }}
                         source={{ uri: 'data:image/jpeg;base64,' + this.props.data.AvatarNguoiLienQuan }}

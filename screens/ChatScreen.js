@@ -13,7 +13,7 @@ import axiosFetch from '../services/axios-fetch';
 import axios from 'axios';
 
 YellowBox.ignoreWarnings([
-    'Warning: Async Storage has been extracted from react-native core'
+    "Warning: Can't perform a React state update on an unmounted component."
 ]);
 
 export class DateTime extends PureComponent {
@@ -87,6 +87,7 @@ export class LeftListItems extends PureComponent {
             <View style={{ flexDirection: 'row', alignSelf: 'flex-start', }}>
                 <Avatar
                     size="medium"
+                    title={this.props.name ? this.props.name[this.props.name.lastIndexOf(' ') + 1] : ''}
                     rounded
                     source={{ uri: 'data:image/jpeg;base64,' + this.props.avatar }}
                     activeOpacity={0.7}
@@ -237,7 +238,7 @@ export default class ChatScreen extends Component {
             return (<RightListItems item={item} />);
         }
         else {
-            return (<LeftListItems item={item} avatar={this.props.navigation.getParam('data').Avatar} />);
+            return (<LeftListItems item={item} avatar={this.props.navigation.getParam('data').Avatar} name={this.props.navigation.getParam('data').HoTen} />);
         }
     }
 

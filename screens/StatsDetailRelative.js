@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Alert, AsyncStorage, Dimensions, Image,
+import {Alert, Dimensions, Image,
   Platform, StyleSheet, Text, TouchableOpacity, View, ScrollView} from 'react-native';
 import {LineChart} from "react-native-chart-kit";
 import ApiService from "../services/api";

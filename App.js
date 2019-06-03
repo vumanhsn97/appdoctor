@@ -210,13 +210,19 @@ const TabScreen = createStackNavigator({
   RelativeStas: {
     screen: RelativeStas,
     navigationOptions: () => ({
-      header: null,
+      headerStyle: {
+        backgroundColor: 'rgba(54, 175, 160, 1)',
+      },
+      headerTintColor: 'white',
     }),
   },
   StatsDetailRelative: {
     screen: StatsDetailRelative,
     navigationOptions: () => ({
-      header: null,
+      headerStyle: {
+        backgroundColor: 'rgba(54, 175, 160, 1)',
+      },
+      headerTintColor: 'white',
     }),
   },
 });

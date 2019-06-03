@@ -241,7 +241,7 @@ class PatientProfile extends Component {
                         <Avatar
                             rounded
                             size='large'
-                            title={this.props.HoTen ? this.props.HoTen[this.props.HoTen.lastIndexOf(' ') + 1] : ''}
+                            title={this.state.data.HoTen ? this.state.data.HoTen[this.state.data.HoTen.lastIndexOf(' ') + 1] : ''}
                             activeOpacity={0.7}
                             containerStyle={{ width: 80, height: 80 }}
                             source={{ uri: 'data:image/jpeg;base64,' + this.state.data.Avatar }}

@@ -32,9 +32,9 @@ export default function(state = data, actions) {
             axios.post(api + 'doctors/update-profile', d)
                 .then(async (response) => {
                     if (response.data.status == 'success') {
-                        console.log(data);
+                        
                     } else {
-                        console.log(data);
+                        
                     }
                 })
                 .catch(function (error) {

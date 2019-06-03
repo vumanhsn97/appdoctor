@@ -21,13 +21,41 @@ class HomeScreen extends Component {
             focus: false,
             textsearch: "",
             loading: false,
+            refreshing: false,
             no: ''
         }
 
-        this._bootstrapAsync();
     }
 
-    _bootstrapAsync = async () => {
+    onLoadListPatinents = async() => {
+        const userId = await AsyncStorage.getItem('UserId');
+        axios(api + 'follows/list-doctor-following', {
+            params: {
+                MaBacSi: userId
+            }
+        }).then(response => {
+            let data = response.data;
+            if (data.status == 'success') {
+                data = data.list_patients;
+                this.setState({ patients: data, refreshing: false });
+            } else {
+                //AsyncStorage.clear();
+                //this.props.navigation.navigate('LoginStack');
+                this.setState({ no: 'Không có bệnh nhân nào được theo dõi' });
+            }
+        })
+            .catch(error => {
+                AsyncStorage.clear();
+                this.props.navigation.navigate('LoginStack');
+                console.log(error)
+            })
+    }
+
+    onRefreshing = () => {
+        this.setState({ refreshing: true, patients: [] }, async () => {await this.onLoadListPatinents()})
+    }
+
+    componentDidMount = async () => {
         const userId = await AsyncStorage.getItem('UserId');
         //AsyncStorage.clear();
         this.props.screenProps.socket.emit("join room", {
@@ -44,107 +72,14 @@ class HomeScreen extends Component {
             this.props.screenProps.updateNotification(info)
         })
 
-        axios(api + 'follows/list-doctor-following', {
-            params: {
-                MaBacSi: userId
-            }
-        }).then(response => {
-            let data = response.data;
-            if (data.status == 'success') {
-                data = data.list_patients;
-                this.setState({ patients: data, data: data });
-            } else {
-                //AsyncStorage.clear();
-                //this.props.navigation.navigate('LoginStack');
-                this.setState({ no: 'Không có bệnh nhân nào được theo dõi' });
-            }
-        })
-            .catch(error => {
-                AsyncStorage.clear();
-                this.props.navigation.navigate('LoginStack');
-                console.log(error)
-            })
+        this.onLoadListPatinents();
+        
 
         this.props.screenProps.socket.on("update relationship", (data) => {
-            axios(api + 'follows/list-doctor-following', {
-                params: {
-                    MaBacSi: data.LoaiNguoiGui == 2 ? data.MaNguoiGui : data.MaNguoiNhan
-                }
-            }).then(response => {
-                let data = response.data;
-                if (data.status == 'success') {
-                    data = data.list_patients;
-                    this.setState({ patients: data, data: data, no: '' });
-                } else {
-                    //AsyncStorage.clear();
-                    //this.props.navigation.navigate('LoginStack');
-                    this.setState({ data: [], patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
-                }
-            })
-                .catch(error => {
-                    //AsyncStorage.clear();
-                    //this.props.navigation.navigate('LoginStack');
-                    console.log(error)
-                })
+            this.onLoadListPatinents();
         })
 
         this.setState({ loading: true })
-    }
-
-    componentDidMount() {
-        this.keyboardDidShowListener = Keyboard.addListener(
-            'keyboardDidShow',
-            this._keyboardDidShow,
-        );
-        this.keyboardDidHideListener = Keyboard.addListener(
-            'keyboardDidHide',
-            this._keyboardDidHide,
-        );
-        
-    }
-
-    componentWillUnmount() {
-        this.keyboardDidShowListener.remove();
-        this.keyboardDidHideListener.remove();
-    }
-
-    _keyboardDidShow() {
-    }
-
-    _keyboardDidHide = () => {
-        //this.setState({ textsearch: "", focus: false })
-        if (this.state.textsearch == "") this.setState({ focus: false });
-    }
-
-
-    componentWillMount() {
-        //const patientsData = this.props.patients;
-        this.props.navigation.setParams({
-            numbernoti: 10
-        });
-    }
-
-    searchPatient = ({ text }) => {
-        this.setState({ textsearch: text });
-        let list = [...this.state.data];
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].HoTen.indexOf(text) === -1) {
-                list.splice(i, 1);
-                i = i - 1;
-            }
-        }
-        this.setState({ patients: list, textsearch: text });
-    }
-
-    onInputFocus = ({ text }) => {
-        this.setState({ focus: true });
-        //this.searchPatient(text);
-    }
-
-    backClick = () => {
-        let list = [...this.state.data];
-        this.setState({ focus: false, patients: list, textsearch: "" });
-        Keyboard.dismiss();
     }
 
     _renderNo = () => {
@@ -158,7 +93,7 @@ class HomeScreen extends Component {
     _renderLayout = () => {
         if (this.state.loading) {
             return (
-                <View>
+                <View style={{ flex: 1 }}>
                     <View style={{ flexDirection: 'row', marginBottom: 10, height: 60, borderBottomColor: '#EFEFEF', backgroundColor: 'rgba(54, 175, 160, 1)', alignItems: 'center' }}>
                         <View style={{ flex: 1, marginLeft: 5, marginRight: 5, alignItems: 'center' }}>
                             <Text style={{ fontSize: 20, color: 'white' }}>Danh sách bệnh nhân</Text>
@@ -183,7 +118,8 @@ class HomeScreen extends Component {
                             highlight={false}
                             navigation={this.props.navigation}
                         />}
-
+                        refreshing={this.state.refreshing}
+                        onRefresh={this.onRefreshing}
                     />
                 </View>
             )

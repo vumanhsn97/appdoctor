@@ -13,24 +13,16 @@ class HomeScreen extends Component {
         super(props);
         this.state = {
             patients: [],
+            refeshing: false,
             focus: false,
             textsearch: "",
             no: '',
         }
     }
 
-    static navigationOptions = {
-        drawerLabel: 'HomeScreen',
-        drawerIcon: ({ tintColor }) => (
-            <Icon name='search' size={20} color='black' />
-        ),
-    };
-
-    componentDidMount = async () => {
+    
+    onLoadListPatients = async() => {
         const userId = await AsyncStorage.getItem('UserId');
-        //AsyncStorage.clear();
-        
-
         axios.get(api + 'follows/list-doctor-following', {
             params: {
                 MaBacSi: userId
@@ -39,64 +31,38 @@ class HomeScreen extends Component {
             let data = response.data;
             if (data.status == 'success') {
                 data = data.list_patients;
-                console.log(data);
-                this.setState({ patients: data });
+                this.setState({ patients: data, no: '', refeshing: false });
             } else {
                 //AsyncStorage.clear();
                 //this.props.navigation.navigate('LoginStack');
-                this.setState({ no: 'Không có bệnh nhân nào được theo dõi' });
+                this.setState({ patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
             }
         })
             .catch(error => {
                 console.log(error)
             })
+    }
+
+    onRefreshing = () => {
+        this.setState({ patients: [], refeshing: true }, async() => { await this.onLoadListPatients()})
+    }
+
+    componentDidMount = async () => {
+        const userId = await AsyncStorage.getItem('UserId');
+        //AsyncStorage.clear();
+
+        this.onLoadListPatients();
 
         this.props.screenProps.socket.on('update list notifications', async(info) => {
-            axios(api + 'follows/list-doctor-following', {
-                params: {
-                    MaBacSi: await AsyncStorage.getItem('UserId')
-                }
-            }).then(response => {
-                let data = response.data;
-                if (data.status == 'success') {
-                    data = data.list_patients;
-                    this.setState({ patients: data, no: '' });
-                } else {
-                    //AsyncStorage.clear();
-                    //this.props.navigation.navigate('LoginStack');
-                    this.setState({ patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
-                }
-            })
-                .catch(error => {
-                    console.log(error)
-                })
+            this.onRefreshing();
         });
 
-        this.props.screenProps.socket.on('update relationship', (info) => {
-            axios(api + 'follows/list-doctor-following', {
-                params: {
-                    MaBacSi: userId
-                }
-            }).then(response => {
-                let data = response.data;
-                if (data.status == 'success') {
-                    data = data.list_patients;
-                    this.setState({ patients: data, no: '' });
-                } else {
-                    //AsyncStorage.clear();
-                    //this.props.navigation.navigate('LoginStack');
-                    this.setState({ patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
-                }
-            })
-                .catch(error => {
-                    console.log(error)
-                })
-        });
+        this.props.screenProps.socket.on('update relationship', async(info) => {
+            this.onRefreshing();
+        })
     }
 
-    componentWillUnmount() {
-
-    }
+    
 
     _renderNo = () => {
         if (this.state.no === '') return;
@@ -123,7 +89,8 @@ class HomeScreen extends Component {
                         navigation={this.props.navigation}
                         socket={this.props.screenProps.socket}
                     />}
-
+                    refreshing={this.state.refeshing}
+                    onRefresh={this.onRefreshing}
                 />
             </View>
         );

@@ -1,9 +1,10 @@
 import React, {Component, PureComponent} from 'react';
 import {StyleSheet, Text, View,
-     ScrollView, Alert, AsyncStorage, RefreshControl,
+     ScrollView, Alert, RefreshControl,
     TouchableOpacity, Dimensions, Image } from 'react-native';
 import {LineChart} from 'react-native-chart-kit';
 import ApiService from "../services/api";
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class RelativeStats extends Component { 
     constructor(props) {

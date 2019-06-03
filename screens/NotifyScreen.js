@@ -14,20 +14,39 @@ class NotifyScreen extends Component {
         super(props);
         this.state = {
             loading: true,
+            refreshing: false,
             notifications: [],
+            page: 1,
             numbernoti: 0
         }
     }
 
-    componentDidFocus() {
-        alert("hiei")
+    onLoadNotification = async() => {
+        const userId = await AsyncStorage.getItem('UserId');
+        axios.get(api + 'notifications', {
+            params: {
+                MaTaiKhoan: userId,
+                LoaiNguoiChinh: 2,
+                page: this.state.page
+            }
+        }).then(response => {
+            let data = response.data;
+            if (data.status == 'success') {
+                data = data.notifications;
+                
+                this.setState({ notifications: data, loading: false, refreshing: false });
+            }
+        })
+            .catch(error => {
+                console.log(error)
+            })
     }
 
-    
+
 
     componentDidMount = async () => {
         const userId = await AsyncStorage.getItem('UserId');
-        
+
         //AsyncStorage.clear();
         this.props.screenProps.socket.on('update list notifications', async (info, id) => {
             axios.get(api + 'notifications', {
@@ -51,34 +70,32 @@ class NotifyScreen extends Component {
                 MaTaiKhoan: userId
             })
         })
-        axios.get(api + 'notifications', {
-            params: {
-                MaTaiKhoan: userId,
-                LoaiNguoiChinh: 2
-            }
-        }).then(response => {
-            let data = response.data;
-            if (data.status == 'success') {
-                data = data.notifications;
-                this.setState({ notifications: data, loading: false });
-            }
-        })
-            .catch(error => {
-                console.log(error)
-            })
+        this.onLoadNotification();
         this.props.screenProps.socket.on('get notifications number', (info) => {
             this.props.screenProps.updateNotification(info);
         })
     }
 
-    updateSeen = async() => {
+    updateSeen = async () => {
         const userId = await AsyncStorage.getItem('UserId');
         this.props.screenProps.updateNotification(0);
-        
+
         this.props.screenProps.socket.emit('seen notifications', {
             LoaiTaiKhoan: 2,
             MaTaiKhoan: userId
         })
+    }
+
+    onLoadMoreNotification = () => {
+        this.setState({ page: this.state.page + 1 }, async() => { await this.onLoadNotification() });
+    }
+
+    onRefreshing = () => {
+        this.setState({
+            refreshing: true,
+            page: 1,
+            notifications: []
+        }, async () => { await this.onLoadNotification() })
     }
 
     _renderLayout = () => {
@@ -92,6 +109,10 @@ class NotifyScreen extends Component {
                     navigation={this.props.navigation}
                     socket={this.props.screenProps.socket}
                 />}
+                refreshing={this.state.refreshing}
+                onRefresh={this.onRefreshing}
+                onEndReached={this.onLoadMoreNotification}
+                onEndReachedThreshold={0.001}
             />)
         }
     }

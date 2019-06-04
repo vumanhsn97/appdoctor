@@ -63,6 +63,8 @@
 		7A819AE1899246BB9CD672D3 /* libRNAccountKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 91FBD71E14D741CE9E4EFAE1 /* libRNAccountKit.a */; };
 		D6051BDBB5AB4E27A13C37DE /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 08CAFA290399449B801B5225 /* libRNSVG.a */; };
 		DC7E9F72578D46B391F162ED /* libRNSVG-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C2CA89EF0C4493D93793C65 /* libRNSVG-tvOS.a */; };
+		C72281288E584527B014D4B8 /* libRCTImageResizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A6548A7B6C84098AFF987AE /* libRCTImageResizer.a */; };
+		19D4602F6F194858AD115947 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57CF70D288F9464098C9B644 /* libRNFS.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -400,6 +402,10 @@
 		5D49B803589547D385B68690 /* RNSVG.xcodeproj */ = {isa = PBXFileReference; name = "RNSVG.xcodeproj"; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		08CAFA290399449B801B5225 /* libRNSVG.a */ = {isa = PBXFileReference; name = "libRNSVG.a"; path = "libRNSVG.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		6C2CA89EF0C4493D93793C65 /* libRNSVG-tvOS.a */ = {isa = PBXFileReference; name = "libRNSVG-tvOS.a"; path = "libRNSVG-tvOS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		B6A6E655D10646FB9E5D228A /* RCTImageResizer.xcodeproj */ = {isa = PBXFileReference; name = "RCTImageResizer.xcodeproj"; path = "../node_modules/react-native-image-resizer/ios/RCTImageResizer.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		8A6548A7B6C84098AFF987AE /* libRCTImageResizer.a */ = {isa = PBXFileReference; name = "libRCTImageResizer.a"; path = "libRCTImageResizer.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		28F607A9C0AC455DA7A3A90C /* RNFS.xcodeproj */ = {isa = PBXFileReference; name = "RNFS.xcodeproj"; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		57CF70D288F9464098C9B644 /* libRNFS.a */ = {isa = PBXFileReference; name = "libRNFS.a"; path = "libRNFS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -434,6 +440,8 @@
 				0E378AC57E7B4199ACF5FEA8 /* libRNCAsyncStorage.a in Frameworks */,
 				7A819AE1899246BB9CD672D3 /* libRNAccountKit.a in Frameworks */,
 				D6051BDBB5AB4E27A13C37DE /* libRNSVG.a in Frameworks */,
+				C72281288E584527B014D4B8 /* libRCTImageResizer.a in Frameworks */,
+				19D4602F6F194858AD115947 /* libRNFS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -632,6 +640,8 @@
 				C897B277A1C24630BC79DC8F /* RNCAsyncStorage.xcodeproj */,
 				5A8B3FEEC8FB449EB71D5BC6 /* RNAccountKit.xcodeproj */,
 				5D49B803589547D385B68690 /* RNSVG.xcodeproj */,
+				B6A6E655D10646FB9E5D228A /* RCTImageResizer.xcodeproj */,
+				28F607A9C0AC455DA7A3A90C /* RNFS.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1307,6 +1317,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1316,6 +1328,8 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-facebook-account-kit\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
+					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 				);
 			};
 			name = Debug;
@@ -1346,6 +1360,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1355,6 +1371,8 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-facebook-account-kit\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
+					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 				);
 			};
 			name = Release;
@@ -1383,6 +1401,8 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-facebook-account-kit\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
+					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 				);
 			};
 			name = Debug;
@@ -1410,6 +1430,8 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-facebook-account-kit\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
+					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 				);
 			};
 			name = Release;
@@ -1448,6 +1470,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1457,6 +1481,8 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-facebook-account-kit\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
+					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 				);
 			};
 			name = Debug;
@@ -1495,6 +1521,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1504,6 +1532,8 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-facebook-account-kit\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
+					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 				);
 			};
 			name = Release;
@@ -1541,6 +1571,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1550,6 +1582,8 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-facebook-account-kit\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
+					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 				);
 			};
 			name = Debug;
@@ -1587,6 +1621,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1596,6 +1632,8 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-facebook-account-kit\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-svg\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
+					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 				);
 			};
 			name = Release;

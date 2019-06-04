@@ -12,6 +12,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import axios from 'axios';
 import ApiService from '../services/api';
+import RNFS from 'react-native-fs';
+import ImageResizer from 'react-native-image-resizer';
 
 class ProfileScreen extends Component {
     constructor(props) {
@@ -84,9 +86,12 @@ class ProfileScreen extends Component {
                 // var source = { uri: response.uri };
 
                 // You can also display the image using data:
-                var source = response.data;
-                this.props.updateMyProfile('image', source);
-                this.setState({ image: source });
+                ImageResizer.createResizedImage(response.uri, 400, 400, 'JPEG', 50).then((output) => {
+                    RNFS.readFile(output.uri, 'base64').then((data) => {
+                        this.props.updateMyProfile('image', data);
+                        this.setState({ image: data });
+                    })
+                })
             }
         });
     }

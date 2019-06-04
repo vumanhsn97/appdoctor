@@ -3,6 +3,8 @@ package com.reduxapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.rnfs.RNFSPackage;
+import fr.bamlab.rnimageresizer.ImageResizerPackage;
 import com.horcrux.svg.SvgPackage;
 import io.underscope.react.fbak.RNAccountKitPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
@@ -29,6 +31,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFSPackage(),
+            new ImageResizerPackage(),
             new SvgPackage(),
             new RNAccountKitPackage(),
             new AsyncStoragePackage(),

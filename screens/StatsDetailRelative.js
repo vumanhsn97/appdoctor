@@ -64,7 +64,6 @@ export default class StatsDetailRelative extends Component {
 
   _renderItem = (item, index) => {
     const date = this.state.date[index]
-    alert(date)
     return(
       <View
         key={index}

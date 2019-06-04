@@ -311,7 +311,7 @@ class PatientProfile extends Component {
                     <View style={{ paddingLeft: 10, paddingRight: 10 }}>
                         <InforCard
                             label='Giới tính'
-                            detail={(this.state.data.GioiTinh === null) ? 'Nữ' : 'Nam'}
+                            detail={(this.state.data.GioiTinh === null) ? 'Nam' : 'Nữ'}
                         />
                         <InforCard
                             label='Email'

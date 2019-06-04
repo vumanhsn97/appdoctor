@@ -19,9 +19,8 @@ import {
   Alert,
   TouchableOpacity,
   View,
-  AsyncStorage,
 } from 'react-native';
-
+import AsyncStorage from '@react-native-community/async-storage';
 import { CheckBox, Overlay, Button } from 'react-native-elements';
 
 import Icon from 'react-native-vector-icons/FontAwesome';

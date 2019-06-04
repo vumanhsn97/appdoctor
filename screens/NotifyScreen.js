@@ -34,7 +34,7 @@ class NotifyScreen extends Component {
             if (data.status == 'success') {
                 data = data.notifications;
                 
-                this.setState({ notifications: data, loading: false, refreshing: false });
+                this.setState({ notifications: [...this.state.notifications, ...data], loading: false, refreshing: false });
             }
         })
             .catch(error => {
@@ -49,22 +49,7 @@ class NotifyScreen extends Component {
 
         //AsyncStorage.clear();
         this.props.screenProps.socket.on('update list notifications', async (info, id) => {
-            axios.get(api + 'notifications', {
-                params: {
-                    MaTaiKhoan: await AsyncStorage.getItem('UserId'),
-                    LoaiNguoiChinh: 2
-                }
-            }).then(response => {
-                let data = response.data;
-                //console.log(data);
-                if (data.status == 'success') {
-                    data = data.notifications;
-                    this.setState({ notifications: data, loading: false });
-                }
-            })
-                .catch(error => {
-                    console.log(error)
-                })
+            this.onRefreshing();
             this.props.screenProps.socket.emit('get notifications number', {
                 LoaiTaiKhoan: 2,
                 MaTaiKhoan: userId

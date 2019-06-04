@@ -19,8 +19,8 @@ import {
   Alert,
   TouchableOpacity,
   View,
-  AsyncStorage,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import ApiService from '../services/api';

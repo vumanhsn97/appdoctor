@@ -14,6 +14,7 @@ import axios from 'axios';
 import ApiService from '../services/api';
 import RNFS from 'react-native-fs';
 import ImageResizer from 'react-native-image-resizer';
+import firebase from "react-native-firebase";
 
 class ProfileScreen extends Component {
     constructor(props) {
@@ -46,7 +47,7 @@ class ProfileScreen extends Component {
             params: {
                 MaBacSi: userId,
             }
-            
+
         })
             .then(async (response) => {
                 if (response.data.status == 'success') {
@@ -71,6 +72,8 @@ class ProfileScreen extends Component {
             storageOptions: {
                 skipBackup: false,
                 path: 'images',
+                cameraRoll: true,
+                waitUntilSaved: true
             },
             mediaType: 'photo',
             cancelButtonTitle: 'Hủy',
@@ -96,27 +99,31 @@ class ProfileScreen extends Component {
         });
     }
 
-    _signOutAsync = async () => {     
+    _signOutAsync = async () => {
         Alert.alert(
             'Bạn muốn thoát khỏi hệ thống?',
             '',
             [
-              {
-                text: 'Không',
-                onPress: () => console.log('Cancel Pressed'),
-              },
-              {text: 'Có', onPress: async () => {
-                await AsyncStorage.clear();
-                await this.apiService.logout();
-                this.props.navigation.navigate('LoginStack');
-              }},
+                {
+                    text: 'Không',
+                    onPress: () => console.log('Cancel Pressed'),
+                },
+                {
+                    text: 'Có', onPress: async () => {
+                        const userId = await AsyncStorage.getItem('UserId');
+                        firebase.messaging().unsubscribeFromTopic(`2-${userId}`);
+                        await AsyncStorage.clear();
+                        await this.apiService.logout();
+                        this.props.navigation.navigate('LoginStack');
+                    }
+                },
             ],
-            {cancelable: false},
-          );
-        
-      };
+            { cancelable: false },
+        );
 
-       // isMatchingPassword = async () => {
+    };
+
+    // isMatchingPassword = async () => {
     //     const password = await AsyncStorage.getItem('Password');
     //     if (SHA256(password) == SHA256(this.state.typePassword)) {
     //         return true;
@@ -144,7 +151,7 @@ class ProfileScreen extends Component {
                 }
                 else if (result.status === "failed") {
                     if (result.message_error === "Mật khẩu cũ không đúng")
-                    alert("Mật khẩu cũ không đúng! Vui lòng kiểm tra lại!");
+                        alert("Mật khẩu cũ không đúng! Vui lòng kiểm tra lại!");
                 }
             })
     }
@@ -167,7 +174,7 @@ class ProfileScreen extends Component {
             return;
         }
         await this.props.updateMyProfile('name', this.state.HoTen);
-        this.setState({isVisibleEditNameScreen: false})
+        this.setState({ isVisibleEditNameScreen: false })
     }
 
     _renderView = () => {
@@ -379,13 +386,13 @@ class ProfileScreen extends Component {
                         }}
                     >
                         <Divider />
-                        <TouchableOpacity onPress = { () => { this.setState({ isVisiblePasswordScreen: true }) }}>
+                        <TouchableOpacity onPress={() => { this.setState({ isVisiblePasswordScreen: true }) }}>
                             <View style={{ flex: 1, flexDirection: 'row', padding: 10, alignItems: "center" }}>
                                 <MaterialCommunityIcons name='textbox-password' size={20}></MaterialCommunityIcons>
                                 <Text style={{ marginLeft: 10, fontSize: 18, color: 'black' }}>Đổi mật khẩu</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress = { () => { this._signOutAsync() }}>
+                        <TouchableOpacity onPress={() => { this._signOutAsync() }}>
                             <View style={{ flex: 1, flexDirection: 'row', padding: 10, alignItems: "center" }}>
                                 <AntDesign name='logout' size={20} />
                                 <Text style={{ marginLeft: 10, fontSize: 18, color: 'black' }}>Đăng xuất</Text>
@@ -396,8 +403,8 @@ class ProfileScreen extends Component {
             )
         }
         return (
-            <View style = {{ alignItems: "center", justifyContent: 'center', flex: 1 }}>
-                <ActivityIndicator size="large" color="#00ff00"/>
+            <View style={{ alignItems: "center", justifyContent: 'center', flex: 1 }}>
+                <ActivityIndicator size="large" color="#00ff00" />
             </View>
         )
     }

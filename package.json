@@ -15,6 +15,7 @@
     "react-native-chart-kit": "^2.6.1",
     "react-native-elements": "^1.1.0",
     "react-native-facebook-account-kit": "^1.1.0",
+    "react-native-firebase": "^5.4.2",
     "react-native-fs": "^2.13.3",
     "react-native-gesture-handler": "^1.2.1",
     "react-native-image-picker": "^0.28.1",

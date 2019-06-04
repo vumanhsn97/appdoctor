@@ -7,6 +7,7 @@ import * as actions from '../actions';
 import api from '../services/config';
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
+import firebase from "react-native-firebase";
 
 YellowBox.ignoreWarnings([
     'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
@@ -27,7 +28,7 @@ class HomeScreen extends Component {
 
     }
 
-    onLoadListPatinents = async() => {
+    onLoadListPatinents = async () => {
         const userId = await AsyncStorage.getItem('UserId');
         axios(api + 'follows/list-doctor-following', {
             params: {
@@ -41,7 +42,7 @@ class HomeScreen extends Component {
             } else {
                 //AsyncStorage.clear();
                 //this.props.navigation.navigate('LoginStack');
-                this.setState({ patient: [], no: 'Không có bệnh nhân nào được theo dõi' });
+                this.setState({ patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
             }
         })
             .catch(error => {
@@ -52,7 +53,7 @@ class HomeScreen extends Component {
     }
 
     onRefreshing = () => {
-        this.setState({ refreshing: true, patients: [] }, async () => {await this.onLoadListPatinents()})
+        this.setState({ refreshing: true, patients: [] }, async () => { await this.onLoadListPatinents() })
     }
 
     componentDidMount = async () => {
@@ -73,13 +74,28 @@ class HomeScreen extends Component {
         })
 
         this.onLoadListPatinents();
-        
+
 
         this.props.screenProps.socket.on("update relationship", (data) => {
             this.onLoadListPatinents();
         })
 
         this.setState({ loading: true })
+
+        this.checkPermission();
+        this.createNotificationListeners();
+    }
+
+    componentWillUnmount() {
+        this.notificationListener();
+        this.notificationOpenedListener();
+    }
+
+    componentWillMount  = async() => {
+        this.props.screenProps.socket.emit("join room", {
+            LoaiTaiKhoan: 2,
+            MaTaiKhoan: await AsyncStorage.getItem('UserId')
+        })
     }
 
     _renderNo = () => {
@@ -131,6 +147,45 @@ class HomeScreen extends Component {
         )
     }
 
+    async checkPermission() {
+        const enabled = await firebase.messaging().hasPermission();
+        if (enabled) {
+            this.getToken();
+            // alert('enable')
+        } else {
+            // alert('unenable')
+            this.requestPermission();
+        }
+    }
+
+    //3
+    async getToken() {
+        let fcmToken = await AsyncStorage.getItem('fcmToken');
+        if (!fcmToken) {
+            // alert('token')
+            fcmToken = await firebase.messaging().getToken();
+            if (fcmToken) {
+                // user has a device token
+                await AsyncStorage.setItem('fcmToken', fcmToken);
+                const userId = await AsyncStorage.getItem('UserId');
+                await firebase.messaging().subscribeToTopic(`2-${ userId }`);
+            }
+        }
+        // alert(fcmToken)
+    }
+
+    //2
+    async requestPermission() {
+        try {
+            await firebase.messaging().requestPermission();
+            // User has authorised
+            this.getToken();
+        } catch (error) {
+            // User has rejected permissions
+            console.log('permission rejected');
+        }
+    }
+
 
     render() {
         return (
@@ -139,6 +194,55 @@ class HomeScreen extends Component {
             </View>
         );
     }
+
+    ////////////////////// Add these methods //////////////////////
+
+  //Remove listeners allocated in createNotificationListeners()
+
+  async createNotificationListeners() {
+    /*
+    * Triggered when a particular notification has been received in foreground
+    * */
+    this.notificationListener = firebase.notifications().onNotification((notification) => {
+      const { title, body } = notification;
+      // alert(notification)
+      this.showAlert(title, body);
+    });
+
+    /*
+    * If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:
+    * */
+    this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+      const { title, body } = notificationOpen.notification;
+      this.showAlert(title, body);
+    });
+
+    /*
+    * If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:
+    * */
+    const notificationOpen = await firebase.notifications().getInitialNotification();
+    if (notificationOpen) {
+      const { title, body } = notificationOpen.notification;
+      // this.showAlert(title, body);
+    }
+    /*
+    * Triggered for data only payload in foreground
+    * */
+    this.messageListener = firebase.messaging().onMessage((message) => {
+      //process data message
+      console.log(JSON.stringify(message));
+    });
+  }
+
+  showAlert(title, body) {
+    Alert.alert(
+      title, body,
+      [
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ],
+      { cancelable: false },
+    );
+  }
 }
 
 const mapStateToProps = state => ({

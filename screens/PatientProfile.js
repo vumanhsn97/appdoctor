@@ -308,10 +308,11 @@ class PatientProfile extends Component {
                         <Text style={{ fontSize: 18, marginLeft: 5 }}>Thông tin bệnh nhân</Text>
                     </View>
                     <Divider />
+                    {console.log(this.state.data.GioiTinh)}
                     <View style={{ paddingLeft: 10, paddingRight: 10 }}>
                         <InforCard
                             label='Giới tính'
-                            detail={(this.state.data.GioiTinh === null) ? 'Nam' : 'Nữ'}
+                            detail={this.state.data.GioiTinh.data ? ((this.state.data.GioiTinh.data[0] === 1) ? 'Nam' : 'Nữ') : 'Nữ'}
                         />
                         <InforCard
                             label='Email'

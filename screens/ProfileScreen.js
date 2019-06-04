@@ -158,6 +158,9 @@ class ProfileScreen extends Component {
     }
 
     updateFullName = async () => {
+        if (this.state.HoTen.trim().length === 0) {
+            return;
+        }
         await this.props.updateMyProfile('name', this.state.HoTen);
         this.setState({isVisibleEditNameScreen: false})
     }

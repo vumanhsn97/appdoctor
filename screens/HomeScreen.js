@@ -37,11 +37,11 @@ class HomeScreen extends Component {
             let data = response.data;
             if (data.status == 'success') {
                 data = data.list_patients;
-                this.setState({ patients: data, refreshing: false });
+                this.setState({ patients: data, refreshing: false, no: '' });
             } else {
                 //AsyncStorage.clear();
                 //this.props.navigation.navigate('LoginStack');
-                this.setState({ no: 'Không có bệnh nhân nào được theo dõi' });
+                this.setState({ patient: [], no: 'Không có bệnh nhân nào được theo dõi' });
             }
         })
             .catch(error => {

@@ -149,15 +149,19 @@ export default class ChatScreen extends Component {
             MaTaiKhoan: userId,
             LoaiTaiKhoan: 2,
         });
-        
+
         this.loadMessages();
 
         this.props.screenProps.socket.on('chat message', (msg) => {
             if (msg !== null) {
-                msg.NgayGioGui = msg.DateValue
-                this.setState({
-                    chatMessages: [msg, ...this.state.chatMessages]
-                });
+                if ((msg.MaNguoiGui === this.state.receiverID && msg.LoaiNguoiGui === this.props.navigation.getParam('type'))
+                    || (msg.MaNguoiNhan === this.state.receiverID && msg.LoaiNguoiNhan === this.props.navigation.getParam('type'))) {
+                    msg.NgayGioGui = msg.DateValue
+                    if (this._isMounted)
+                        this.setState({
+                            chatMessages: [msg, ...this.state.chatMessages]
+                        });
+                }
             }
         });
 
@@ -178,12 +182,12 @@ export default class ChatScreen extends Component {
                         LoaiNguoiLienQuan: 2,
                         LoaiThongBao: 2    // Thông báo có tin nhắn mới từ người khác
                     }
-                    
+
                     await this.props.screenProps.socket.emit('create notifications', info);
                 })
-                .catch(function (error) {
-                    console.log(error);
-                });
+                    .catch(function (error) {
+                        console.log(error);
+                    });
             }
             if (this._isMounted) {
                 const info2 = {
@@ -195,7 +199,7 @@ export default class ChatScreen extends Component {
                 }
                 await this.props.screenProps.socket.emit('update relationship', info2);
             }
-            
+
         });
     }
 

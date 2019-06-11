@@ -154,8 +154,8 @@ export default class ChatScreen extends Component {
 
         this.props.screenProps.socket.on('chat message', (msg) => {
             if (msg !== null) {
-                if ((msg.MaNguoiGui === this.state.receiverID && msg.LoaiNguoiGui === this.props.navigation.getParam('type'))
-                    || (msg.MaNguoiNhan === this.state.receiverID && msg.LoaiNguoiNhan === this.props.navigation.getParam('type'))) {
+                if ((msg.MaNguoiGui === this.state.receiverID && msg.LoaiNguoiGui === 1)
+                    || (msg.MaNguoiNhan === this.state.receiverID && msg.LoaiNguoiNhan === 1)) {
                     msg.NgayGioGui = msg.DateValue
                     if (this._isMounted)
                         this.setState({
@@ -166,7 +166,7 @@ export default class ChatScreen extends Component {
         });
 
         this.props.screenProps.socket.on('not seen message', async () => {
-            if (this.state.chated > 1) return;
+            
             if (this._isMounted) {
                 await axios.get(baseURL + 'doctors/find-doctor-by-id', {
                     params: {

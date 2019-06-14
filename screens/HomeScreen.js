@@ -42,7 +42,7 @@ class HomeScreen extends Component {
             } else {
                 //AsyncStorage.clear();
                 //this.props.navigation.navigate('LoginStack');
-                this.setState({ patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
+                this.setState({ refreshing: false, patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
             }
         })
             .catch(error => {
@@ -62,6 +62,13 @@ class HomeScreen extends Component {
         this.props.screenProps.socket.emit("join room", {
             LoaiTaiKhoan: 2,
             MaTaiKhoan: userId
+        })
+
+        this.props.screenProps.socket.on("rejoin room", () => {
+            this.props.screenProps.socket.emit("join room", {
+                LoaiTaiKhoan: 2,
+                MaTaiKhoan: userId
+            })
         })
 
         this.props.screenProps.socket.emit('get notifications number', {

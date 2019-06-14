@@ -126,7 +126,7 @@ export default class ChatScreen extends Component {
 
     static navigationOptions = ({ navigation }) => {
         return {
-            title: navigation.getParam('title'),
+            title: navigation.getParam('data').HoTen,
             headerTitleStyle: {
                 fontWeight: 'bold',
                 // color: 'white', người gửi

@@ -35,12 +35,13 @@ class HomeScreen extends Component {
             } else {
                 //AsyncStorage.clear();
                 //this.props.navigation.navigate('LoginStack');
-                this.setState({ patients: [], no: 'Không có bệnh nhân nào được theo dõi' });
+                this.setState({ patients: [], refeshing: false, no: 'Không có bệnh nhân nào được theo dõi' });
             }
         })
             .catch(error => {
                 console.log(error)
             })
+        this.setState({ refeshing: false });
     }
 
     onRefreshing = () => {

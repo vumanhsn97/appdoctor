@@ -20,6 +20,7 @@ import RelativeStas from './screens/RelativeStas';
 import RegisterInformationPage from './screens/RegisterInformationPage';
 import ForgetInformationPage from './screens/ForgetInformationPage';
 import StatsDetailRelative from './screens/StatsDetailRelative';
+import MealDetailRelative from './screens/MealDetailRelative';
 import { YellowBox } from 'react-native';
 import api from './services/config';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -185,12 +186,7 @@ const TabScreen = createStackNavigator({
   },
   ChatScreen: {
     screen: ChatScreen,
-    navigationOptions: () => ({
-      headerStyle: {
-        backgroundColor: 'rgba(54, 175, 160, 1)',
-      },
-      headerTintColor: 'white',
-    }),
+    
   },
   SearchScreen: {
     screen: SearchScreen,
@@ -218,6 +214,15 @@ const TabScreen = createStackNavigator({
   },
   StatsDetailRelative: {
     screen: StatsDetailRelative,
+    navigationOptions: () => ({
+      headerStyle: {
+        backgroundColor: 'rgba(54, 175, 160, 1)',
+      },
+      headerTintColor: 'white',
+    }),
+  },
+  MealDetailRelative: {
+    screen: MealDetailRelative,
     navigationOptions: () => ({
       headerStyle: {
         backgroundColor: 'rgba(54, 175, 160, 1)',

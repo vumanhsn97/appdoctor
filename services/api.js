@@ -87,6 +87,15 @@ export default () => {
         logout: () => {
             return axiosPost(baseURL + 'doctors/log-out')
         },
+        getListMeal: (info) => {
+            return axiosGet(baseURL + `meals?MaBenhNhan=${info.MaBenhNhan}&page=${info.page}`)
+              .then((res) => {
+                if(res.data.status === 'success'){
+                  return res.data 
+                }
+                  return null
+                })
+            },
         changeBacSiPassword: (info) => {
             return axiosPost(baseURL + `doctors/change-password`, {
                 MaBacSi: info.MaBacSi,

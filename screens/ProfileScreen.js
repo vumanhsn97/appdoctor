@@ -112,6 +112,10 @@ class ProfileScreen extends Component {
                     text: 'Có', onPress: async () => {
                         const userId = await AsyncStorage.getItem('UserId');
                         firebase.messaging().unsubscribeFromTopic(`2-${userId}`);
+                        this.props.screenProps.socket.emit('leave room', {
+                            MaTaiKhoan: userId,
+                            LoaiTaiKhoan: 2,
+                          });
                         await AsyncStorage.clear();
                         await this.apiService.logout();
                         this.props.navigation.navigate('LoginStack');

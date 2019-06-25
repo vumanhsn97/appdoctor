@@ -90,13 +90,14 @@ class SearchScreen extends Component {
             <View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10, backgroundColor: 'rgba(54, 175, 160, 1)' }}>
                     <TouchableOpacity onPress={() => { this.props.navigation.goBack() }}>
-                        <View style={{ paddingRight: 10 }}>
+                        <View style={{ paddingRight: 15 }}>
                             <Icon name="arrow-left" size={20} color='white' />
                         </View>
                     </TouchableOpacity>
-                    <TextInput style={{ height: 30, padding: 0, paddingLeft: 5, paddingRight: 5, flex: 1, fontSize: 16, backgroundColor: 'white', marginRight: 20 }}
+                    <TextInput style={{ height: 40, padding: 0, paddingLeft: 5, paddingRight: 5, flex: 1, fontSize: 16, backgroundColor: 'white', marginRight: 20, fontSize: 20 }}
                         onChangeText={(text) => this._searchPatient(text)}
-                        autoFocus={true}
+                        //autoFocus={true}
+                        placeholder="Nhập số điện thoại bệnh nhân"
                         keyboardType='default'
                     />
                 </View>

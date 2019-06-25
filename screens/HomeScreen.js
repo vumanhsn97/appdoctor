@@ -122,8 +122,8 @@ class HomeScreen extends Component {
                             <Text style={{ fontSize: 20, color: 'white' }}>Danh sách bệnh nhân</Text>
                         </View>
                         <TouchableOpacity onPress={() => this.props.navigation.navigate('SearchScreen')}>
-                            <View style={{ width: 30 }}>
-                                <Icon name='search' size={15} color='white' />
+                            <View style={{ paddingLeft: 10, paddingRight: 10 }}>
+                                <Icon name='user-plus' size={25} color='white' />
                             </View>
                         </TouchableOpacity>
                     </View>

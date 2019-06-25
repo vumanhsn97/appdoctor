@@ -44,7 +44,7 @@ class NotiCard extends Component {
         var sec = date.getSeconds();
         return (
             <Text style={{ color: 'rgba(54, 175, 160, 1)' }}>
-                {day + '/' + month + '/' + year + ' vào lúc ' + hour + ":" + min + ':' + sec}
+                {day + '/' + month + '/' + year + ' lúc ' + (hour<10?'0':'') + hour + ":" + (min < 10 ? '0' : '') + min}
             </Text>
         )
     }

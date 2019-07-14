@@ -84,13 +84,29 @@ class CardItem extends Component {
                                 </View>
                             }
                             {
-                                (this.props.type === 'text') && <View style={{
+                                (this.props.type === 'text' || this.props.type === 'cmnd') && <View style={{
                                     flex: 1,
                                     flexDirection: 'row',
                                     justifyContent: 'space-between',
                                     marginHorizontal: 20,
                                 }}>
-                                    <Input onChangeText={(text) => this.setState({ data: text })} placeholder={this.props.settingLabel}>{this.state.data}</Input>
+                                    {this.props.type === 'text'
+                                        ?
+                                        <Input onChangeText={(text) => this.setState({ data: text })} placeholder={this.props.settingLabel}>{this.state.data ? this.state.data : ""}</Input>
+                                        :
+                                        <Input
+                                            keyboardType='numeric'
+                                            maxLength={10}
+                                            onChangeText={(text) => {
+                                                var regex = /^\s*?[0-9]{1,10}\s*$/;
+                                                if (text === '' || regex.test(text)) {
+                                                    this.setState({ data: text })
+                                                }
+
+
+                                            }}
+                                            placeholder={this.props.settingLabel}>{this.state.data ? this.state.data : ""}</Input>
+                                    }
                                 </View>
                             }
                             <Button
@@ -104,7 +120,7 @@ class CardItem extends Component {
                     <ListItem
                         title={
                             <Text style={{ fontSize: 20, color: 'black' }}>
-                                {(this.props.type === 'gender') ? ((this.state.update !== undefined) ? (this.state.update ? "Nam" : "Nữ") : (this.props.settingDetail ? "Nam" : "Nữ")) : (this.state.update ? this.state.update : this.props.settingDetail)}
+                                {this.props.type == 'gender' ? (this.state.update ? "Nam" : "Nữ") : this.state.data}
                             </Text>
                         }
                         subtitle={this.props.label}
@@ -134,24 +150,40 @@ class CardItem extends Component {
                                 }}>
                                     <CheckBox
                                         title="Nam"
-                                        checked={(this.state.data !== undefined) ? this.state.data : this.props.settingDetail}
+                                        checked={this.state.data}
                                         onPress={() => this.setState({ data: true })}
                                     />
                                     <CheckBox
                                         title="Nữ"
-                                        checked={(this.state.data !== undefined) ? !this.state.data : !this.props.settingDetail}
+                                        checked={!this.state.data}
                                         onPress={() => this.setState({ data: false })}
                                     />
                                 </View>
                             }
                             {
-                                (this.props.type === 'text') && <View style={{
+                                (this.props.type === 'text' || this.props.type === 'cmnd') && <View style={{
                                     flex: 1,
                                     flexDirection: 'row',
                                     justifyContent: 'space-between',
                                     marginHorizontal: 20,
                                 }}>
-                                    <Input onChangeText={(text) => this.setState({ data: text })} placeholder={this.props.settingLabel}>{this.state.data}</Input>
+                                    {this.props.type === 'text'
+                                        ?
+                                        <Input onChangeText={(text) => this.setState({ data: text })} placeholder={this.props.settingLabel}>{this.state.data ? this.state.data : ""}</Input>
+                                        :
+                                        <Input
+                                            keyboardType='numeric'
+                                            maxLength={10}
+                                            value={this.state.data ? this.state.data : ""}
+                                            onChangeText={(text) => {
+                                                var regex = /^\s*?[0-9]{1,10}\s*$/;
+                                                if (text === '' || regex.test(text)) {
+                                                    this.setState({ data: text })
+                                                }
+                                            }}
+                                            placeholder={this.props.settingLabel}>
+                                        </Input>
+                                    }
                                 </View>
                             }
                             <Button
@@ -165,7 +197,7 @@ class CardItem extends Component {
                     <ListItem
                         title={
                             <Text style={{ fontSize: 20, color: 'black' }}>
-                                {(this.props.type === 'gender') ? ((this.state.update !== undefined) ? (this.state.update ? "Nam" : "Nữ") : (this.props.settingDetail ? "Nam" : "Nữ")) : (this.state.update ? this.state.update : this.props.settingDetail)}
+                                {this.props.type == 'gender' ? (this.state.update ? "Nam" : "Nữ") : (this.state.update == null ? "Chưa có dữ liệu" : this.state.update)}
                             </Text>
                         }
                         subtitle={this.props.label}

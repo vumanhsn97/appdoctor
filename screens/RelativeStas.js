@@ -148,7 +148,9 @@ export default class RelativeStats extends Component {
         for (let index = (result.length - 1); index >= 0;) {
             switch (result[0].Loai) {
             case 1: {
-                const getDate = new Date(result[index].NgayNhap)
+                var getDate = new Date(result[index].NgayNhap)
+                var timezone = getDate.getTimezoneOffset() * 60000;
+                getDate = new Date(getDate.getTime() + timezone);
                 valueData.date.push(getDate)
                 valueData.data.datasets[0].data.push(highDomain);
                 valueData.data.datasets[1].data.push(lowDomain);
@@ -159,7 +161,9 @@ export default class RelativeStats extends Component {
                 break;
             }
             case 2: {
-                const getDate = new Date(result[index].blood_pressure01.NgayNhap)
+                var getDate = new Date(result[index].blood_pressure01.NgayNhap)
+                var timezone = getDate.getTimezoneOffset() * 60000;
+                getDate = new Date(getDate.getTime() + timezone);
                 valueData.date.push(getDate)
                 getData[0].data.push(result[index].blood_pressure02.ChiSo);
                 // --index;
@@ -237,6 +241,7 @@ export default class RelativeStats extends Component {
         const lowDomain = item.lowDomain
         const unit = item.unit
         return (
+
             <View key={item.type}>
               <View style={{flexDirection: 'row', margin: 10, marginTop: 20, justifyContent: 'space-between'}}>
                 <View style={{flexDirection: 'row', }}>

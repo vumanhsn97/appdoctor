@@ -99,6 +99,20 @@ class ProfileScreen extends Component {
         });
     }
 
+    _showAlert(text) {
+        Alert.alert(
+            text,
+            '',
+            [
+                {
+                    text: 'ok',
+                    onPress: () => console.log('Cancel Pressed'),
+                },
+            ],
+            { cancelable: false },
+        );
+    }
+
     _signOutAsync = async () => {
         Alert.alert(
             'Bạn muốn thoát khỏi hệ thống?',
@@ -148,21 +162,21 @@ class ProfileScreen extends Component {
             .then((result) => {
                 if (result.status === "success") {
                     // Cập nhật thành công
-                    alert("Cập nhật mật khẩu thành công!");
+                    this._showAlert("Cập nhật mật khẩu thành công!");
                     this.setState({
                         isVisiblePasswordScreen: false
                     })
                 }
                 else if (result.status === "failed") {
                     if (result.message_error === "Mật khẩu cũ không đúng")
-                        alert("Mật khẩu cũ không đúng! Vui lòng kiểm tra lại!");
+                        this._showAlert("Mật khẩu cũ không đúng! Vui lòng kiểm tra lại!");
                 }
             })
     }
 
     changePassword = () => {
         if (this.state.typePassword == "" || this.state.newPassword == "") {
-            alert("Mật khẩu không được rỗng!");
+            this._showAlert("Mật khẩu không được rỗng!");
         } else {
             // if (this.isMatchingPassword()) {
             //     this.onUpdatePassword();
@@ -263,7 +277,7 @@ class ProfileScreen extends Component {
                             fontSize: 28,
                             color: "#696969",
                             fontWeight: '600',
-                        }}>{this.state.HoTen}&nbsp;<AntDesign name='edit' size={25} color='rgba(74, 195, 180, 1)'></AntDesign></Text>
+                        }}>{this.state.HoTen}</Text>
                         <Text style={{
                             fontSize: 16,
                             color: "#00BFFF",
@@ -295,12 +309,12 @@ class ProfileScreen extends Component {
                         }}
                     >
                         <CardItemProfile
-                            type='text'
+                            type='cmnd'
                             label='Chứng minh nhân dân'
                             keyname='cmnd'
-                            title={this.state.profile.CMND ? this.state.profile.CMND : 'Chưa có dữ liệu'}
+                            title={this.state.profile.CMND ? this.state.profile.CMND : null}
                             settingLabel='Nhập CMND'
-                            settingDetail={this.state.profile.CMND ? this.state.profile.CMND : 'Chưa có dữ liệu'}
+                            settingDetail={this.state.profile.CMND ? this.state.profile.CMND : null}
                         />
                         <CardItemProfile
                             type='gender'
@@ -314,17 +328,17 @@ class ProfileScreen extends Component {
                             type='text'
                             label='Bệnh viện'
                             keyname='hospital'
-                            title={this.state.profile.BenhVien ? this.state.profile.BenhVien : 'Chưa có dữ liệu'}
+                            title={this.state.profile.BenhVien ? this.state.profile.BenhVien : null}
                             settingLabel='Nhập tên bệnh viện'
-                            settingDetail={this.state.profile.BenhVien ? this.state.profile.BenhVien : 'Chưa có dữ liệu'}
+                            settingDetail={this.state.profile.BenhVien ? this.state.profile.BenhVien : null}
                         />
                         <CardItemProfile
                             type='speciality'
                             label='Chuyên môn'
                             keyname='speciality'
-                            title={this.state.profile.ChuyenMon ? this.state.profile.ChuyenMon : 'Chưa có dữ liệu'}
+                            title={this.state.profile.ChuyenMon ? this.state.profile.ChuyenMon : null}
                             settingLabel='Chọn chuyên môn'
-                            settingDetail={this.state.profile.ChuyenMon ? this.state.profile.ChuyenMon : 'Chưa có dữ liệu'}
+                            settingDetail={this.state.profile.ChuyenMon ? this.state.profile.ChuyenMon : null}
                         />
                     </Card>
 
@@ -358,9 +372,9 @@ class ProfileScreen extends Component {
                             type='text'
                             label='Email'
                             keyname='email'
-                            title={this.state.profile.Email ? this.state.profile.Email : 'Chưa có dữ liệu'}
+                            title={this.state.profile.Email ? this.state.profile.Email : null}
                             settingLabel='Nhập email'
-                            settingDetail={this.state.profile.Email ? this.state.profile.Email : 'Chưa có dữ liệu'}
+                            settingDetail={this.state.profile.Email ? this.state.profile.Email : null}
                         />
                     </Card>
 

@@ -286,7 +286,7 @@ class PatientProfile extends Component {
                                         </View>
                                     </TouchableOpacity> : <Text></Text>)
                                     }
-                                    {(this.state.type == 'followed' ? <TouchableOpacity onPress={() => this.props.navigation.navigate('RelativeStas', { data: this.state.data })}>
+                                    {(this.state.type == 'followed' ? <TouchableOpacity onPress={() => this.props.navigation.navigate('RelativeStas', { data: this.state.data, id: this.props.navigation.getParam('id', 'nope') })}>
 
                                         <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20, marginTop: 10 }}>
                                             <Icon name='file-contract' size={20} color='rgba(54, 175, 160, 1)'/>

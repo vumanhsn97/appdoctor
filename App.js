@@ -21,6 +21,7 @@ import RegisterInformationPage from './screens/RegisterInformationPage';
 import ForgetInformationPage from './screens/ForgetInformationPage';
 import StatsDetailRelative from './screens/StatsDetailRelative';
 import MealDetailRelative from './screens/MealDetailRelative';
+import StatDetailRelativePerDay from './screens/StatDetailRelativePerDay';
 import { YellowBox } from 'react-native';
 import api from './services/config';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -223,6 +224,15 @@ const TabScreen = createStackNavigator({
   },
   MealDetailRelative: {
     screen: MealDetailRelative,
+    navigationOptions: () => ({
+      headerStyle: {
+        backgroundColor: 'rgba(54, 175, 160, 1)',
+      },
+      headerTintColor: 'white',
+    }),
+  },
+  StatDetailRelativePerDay: {
+    screen: StatDetailRelativePerDay,
     navigationOptions: () => ({
       headerStyle: {
         backgroundColor: 'rgba(54, 175, 160, 1)',

@@ -1,11 +1,31 @@
-import React, {Component} from 'react';
-import {Alert, Dimensions, Image,
-  Platform, StyleSheet, Text, TouchableOpacity, View, ScrollView} from 'react-native';
-import {LineChart} from "react-native-chart-kit";
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ * @flow
+ * @lint-ignore-every XPLATJSCOPYRIGHT1
+ */
+
+import React, { Component } from 'react';
+import {
+  Alert, AsyncStorage, Dimensions, Image,
+  Platform, StyleSheet, Text, TouchableOpacity, View, ScrollView
+} from 'react-native';
+import { LineChart } from "react-native-chart-kit";
 import ApiService from "../services/api";
 
+const instructions = Platform.select({
+  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
+  android:
+    'Double tap R on your keyboard to reload,\n' +
+    'Shake or press menu button for dev menu',
+});
+
+type Props = {};
+
 export default class StatsDetailRelative extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
 
     this.state = {
@@ -59,18 +79,20 @@ export default class StatsDetailRelative extends Component {
       // copy the map rather than modifying state.
       const selected = new Map(state.selected);
       selected.set(id, !selected.get(id)); // toggle
-      return {selected};
+      return { selected };
     });
   };
 
   _renderItem = (item, index) => {
     const dateReverse = this.state.date.slice()
-    const date = dateReverse.reverse()[index]
+    var date = dateReverse.reverse()[index]
+    var timezone = date.getTimezoneOffset() * 60000;
+    date = new Date(date.getTime() + timezone);
     const circle = {
       width: 25,
       height: 25,
-      borderRadius: 100/2,
-      backgroundColor: this.state.highDomain!==0
+      borderRadius: 100 / 2,
+      backgroundColor: this.state.highDomain !== 0
         ? item >= this.state.highDomain
           ? 'rgba(255, 33, 0, 1)'
           : item <= this.state.lowDomain
@@ -78,8 +100,8 @@ export default class StatsDetailRelative extends Component {
             : 'rgba(106, 194, 89, 1)'
         : 'white'
     }
-    return(
-      <View
+    return (
+      <TouchableOpacity
         key={index}
         style={{
           backgroundColor: 'white',
@@ -92,25 +114,28 @@ export default class StatsDetailRelative extends Component {
           marginVertical: 1,
           flexDirection: 'row',
           justifyContent: 'center',
-        }}>
+        }}
+        onPress={() => { this.props.navigation.navigate('StatDetailRelativePerDay', { date: date, unit: this.state.unit, type: this.props.navigation.state.params.item.id, name: this.props.navigation.state.params.name, user: this.props.navigation.state.params.user, id: this.props.navigation.getParam('id') }) }}
+      >
 
-        <View style={{flex: 1.5, flexDirection: 'column'}}>
-          <Text style={{fontSize: 20, textAlign: 'center', fontWeight: '600'}}>
+        <View style={{ flex: 1.5, flexDirection: 'column' }}>
+          <Text style={{ fontSize: 20, textAlign: 'center', fontWeight: '600' }}>
             {date.getDate() + '/' + (date.getMonth() + 1)}
           </Text>
-          <Text style={{fontSize: 14, textAlign: 'center', fontWeight: '300'}}>
-          {date.getHours() + ':' + (date.getMinutes()<10?'0':'') + date.getMinutes()}
+          <Text style={{ fontSize: 14, textAlign: 'center', fontWeight: '300' }}>
+            {date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes()}
           </Text>
         </View>
 
-        <View style={{flex: 3, flexDirection: 'column'}}>
-          <Text style={{fontSize: 17, textAlign: 'center', fontWeight: '500'}}>{item}</Text>
-          <Text style={{fontSize: 12, textAlign: 'center',}}>{this.state.unit}</Text>
+        <View style={{ flex: 3, flexDirection: 'column' }}>
+          <Text style={{ fontSize: 17, textAlign: 'center', fontWeight: '500' }}>{item}</Text>
+          <Text style={{ fontSize: 12, textAlign: 'center', }}>{this.state.unit}</Text>
         </View>
-        <View style={{alignSelf: 'center'}}>
-          <View style={circle}/>
+
+        <View style={{ alignSelf: 'center' }}>
+          <View style={circle} />
         </View>
-      </View>
+      </TouchableOpacity>
     );
   }
 
@@ -124,8 +149,8 @@ export default class StatsDetailRelative extends Component {
     const screenWidth = Dimensions.get('window').width
 
     let listItemsTemp = this.state.listItems.datasets[2].data.slice()
-    let listItems = listItemsTemp.reverse().map((item, index) =>{
-      const value = this.props.navigation.state.params.item.id===1
+    let listItems = listItemsTemp.reverse().map((item, index) => {
+      const value = this.props.navigation.state.params.item.id === 1
         ? item
         : this.props.navigation.state.params.item.data.datasets[3].data.slice().reverse()[index] + '/' + item
 
@@ -133,20 +158,20 @@ export default class StatsDetailRelative extends Component {
         this._renderItem(value, index)
       )
     })
-// alert(JSON.stringify(this.props.navigation.state.params.item.data.datasets[2].data))
+    // alert(JSON.stringify(this.props.navigation.state.params.item.data.datasets[2].data))
     return (
       <ScrollView style={styles.container}>
-        <View style={{flexDirection: 'row', margin: 10, marginTop: 20, marginBottom: 20, justifyContent: 'center'}}>
+        <View style={{ flexDirection: 'row', margin: 10, marginTop: 20, marginBottom: 20, justifyContent: 'center' }}>
           <Image
-            source={this.props.navigation.state.params.item.id===1
+            source={this.props.navigation.state.params.item.id === 1
               ? require('../images/Diabetes.png')
               : require('../images/BloodPressure.png')}
             style={styles.chartTitleIcon}
           />
-          <Text style={{marginHorizontal: 10, fontSize: 20, fontWeight: 'bold'}}>
-            {this.props.navigation.state.params.item.id===1
-            ? 'ĐƯỜNG HUYẾT'
-            : 'HUYẾT ÁP'}
+          <Text style={{ marginHorizontal: 10, fontSize: 20, fontWeight: 'bold' }}>
+            {this.props.navigation.state.params.item.id === 1
+              ? 'ĐƯỜNG HUYẾT'
+              : 'HUYẾT ÁP'}
           </Text>
         </View>
 
@@ -161,25 +186,27 @@ export default class StatsDetailRelative extends Component {
           }}>
           <LineChart
             data={this.props.navigation.state.params.item.data}
-            width={screenWidth-50}
+            width={screenWidth - 50}
             height={220}
             chartConfig={chartConfig}
-            onDataPointClick={(item) => {Alert.alert(
-              this.state.highDomain!==0
-                ? item.value >= this.state.highDomain
-                ? 'Giá trị chỉ số là ' + item.value.toString() + ', ở ngưỡng cao'
-                : item.value <= this.state.lowDomain
-                  ? 'Giá trị chỉ số là ' + item.value.toString() + ', ở ngưỡng thấp'
-                  : 'Giá trị chỉ số là ' + item.value.toString() + ', ở mức bình thường'
-                : 'Giá trị chỉ số là ' + item.value.toString() + ''
-            )}}
+            onDataPointClick={(item) => {
+              Alert.alert(
+                this.state.highDomain !== 0
+                  ? item.value >= this.state.highDomain
+                    ? 'Giá trị chỉ số là ' + item.value.toString() + ', ở ngưỡng cao'
+                    : item.value <= this.state.lowDomain
+                      ? 'Giá trị chỉ số là ' + item.value.toString() + ', ở ngưỡng thấp'
+                      : 'Giá trị chỉ số là ' + item.value.toString() + ', ở mức bình thường'
+                  : 'Giá trị chỉ số là ' + item.value.toString() + ''
+              )
+            }}
             withShadow={false}
             bezier
           />
         </View>
 
-        <View style={{marginTop: 15, }}>
-          <Text style={{margin: 10, fontSize: 20, fontWeight: 'bold'}}>
+        <View style={{ marginTop: 15, }}>
+          <Text style={{ margin: 10, fontSize: 20, fontWeight: 'bold' }}>
             Bảng thống kê chỉ số theo ngày
           </Text>
           {listItems}

@@ -8,6 +8,7 @@ import api from '../services/config';
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from "react-native-firebase";
+import ApiService from "../services/api";
 
 YellowBox.ignoreWarnings([
     'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
@@ -23,9 +24,10 @@ class HomeScreen extends Component {
             textsearch: "",
             loading: false,
             refreshing: false,
-            no: ''
+            no: '',
+            userid: '',
         }
-
+        this.apiService = ApiService()
     }
 
     onLoadListPatinents = async () => {
@@ -58,6 +60,7 @@ class HomeScreen extends Component {
 
     componentDidMount = async () => {
         const userId = await AsyncStorage.getItem('UserId');
+        this.setState({userid: userId});
         //AsyncStorage.clear();
         this.props.screenProps.socket.emit("join room", {
             LoaiTaiKhoan: 2,
@@ -222,6 +225,7 @@ class HomeScreen extends Component {
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
       const { title, body } = notificationOpen.notification;
       this.showAlert(title, body);
+      this.props.navigation.navigate('AddDiabetes');
     });
 
     /*
@@ -230,6 +234,117 @@ class HomeScreen extends Component {
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
       const { title, body } = notificationOpen.notification;
+      switch(notificationOpen.notification.data.loaiThongBao){
+        case '1': {
+          // message2 += ' muốn theo dõi sức khỏe của bạn'
+          if (notificationOpen.notification.data.loaiTaiKhoanLienQuan==='1'){
+            this.apiService.getBenhNhanInfo({MaBenhNhan: notificationOpen.notification.data.maTaiKhoanLienQuan})
+              .then(async (result) => {
+                if (result !== null)
+                {
+                  // alert(JSON.stringify(result))
+                  const data = result[0]
+
+                  const info2 = {
+                    MaNguoiGui: this.state.userid,
+                    LoaiNguoiGui: 2,
+                    MaNguoiNhan: notificationOpen.notification.data.maTaiKhoanLienQuan,
+                    LoaiNguoiNhan: 1,
+                    updateList: true,
+                  }
+                  await this.props.screenProps.socket.emit('update relationship', info2);
+                  this.props.screenProps.socket.emit('seen notifications', {
+                    MaTaiKhoan: this.state.userid,
+                    LoaiTaiKhoan: 2,
+                  })
+                  this.apiService.seenThisNotification({
+                    MaTaiKhoan: this.state.userid,
+                    LoaiNguoiChinh: 2,
+                    Id: parseInt(notificationOpen.notification.data.idNoti)})
+
+                    this.props.navigation.navigate('PatientProfile', { id: notificationOpen.notification.data.maTaiKhoanLienQuan });
+                }
+              })
+          }
+          break;
+        }
+        case '2':  {
+          // message2 += ' tin nhắn mới'
+          if (notificationOpen.notification.data.loaiTaiKhoanLienQuan==='1'){
+            this.apiService.getBenhNhanInfo({MaBenhNhan: notificationOpen.notification.data.maTaiKhoanLienQuan})
+              .then(async (result) => {
+                if (result !== null)
+                {
+                  // alert(JSON.stringify(result))
+                  const data = result[0]
+                  // this.props.navigation.navigate('RelativeProfile', { myID: this.props.screenProps.user.thongTinChung.sdt, data: data })
+                  await this.apiService.updateSeeingSeen({
+                    MaTaiKhoan: this.state.userid,
+                    LoaiTaiKhoan: 2,
+                    MaTaiKhoanLienQuan: notificationOpen.notification.data.maTaiKhoanLienQuan,
+                    LoaiTaiKhoanLienQuan: 1
+                  })
+
+                  // socket list
+                  const info2 = {
+                    MaNguoiGui: this.state.userid,
+                    LoaiNguoiGui: 2,
+                    MaNguoiNhan: notificationOpen.notification.data.maTaiKhoanLienQuan,
+                    LoaiNguoiNhan: 1,
+                    updateList: true,
+                  }
+                  await this.props.screenProps.socket.emit('update relationship', info2);
+                  this.props.screenProps.socket.emit('seen notifications', {
+                    MaTaiKhoan: this.state.userid,
+                    LoaiTaiKhoan: 2,
+                  })
+                  this.apiService.seenThisNotification({
+                    MaTaiKhoan: this.state.userid,
+                    LoaiNguoiChinh: 2,
+                    Id: parseInt(notificationOpen.notification.data.idNoti)})
+                  // navigate
+                  this.props.navigation.navigate('ChatScreen', { data: data })
+                }
+              })
+          }
+          
+          break;
+        }
+        case '3': {
+          // message2 += ' muốn theo dõi sức khỏe của bạn'
+          if (notificationOpen.notification.data.loaiTaiKhoanLienQuan==='1'){
+            this.apiService.getBenhNhanInfo({MaBenhNhan: notificationOpen.notification.data.maTaiKhoanLienQuan})
+              .then(async (result) => {
+                if (result !== null)
+                {
+                  // alert(JSON.stringify(result))
+                  const data = result[0]
+
+                  const info2 = {
+                    MaNguoiGui: this.state.userid,
+                    LoaiNguoiGui: 2,
+                    MaNguoiNhan: notificationOpen.notification.data.maTaiKhoanLienQuan,
+                    LoaiNguoiNhan: 1,
+                    updateList: true,
+                  }
+                  await this.props.screenProps.socket.emit('update relationship', info2);
+                  this.props.screenProps.socket.emit('seen notifications', {
+                    MaTaiKhoan: this.state.userid,
+                    LoaiTaiKhoan: 2,
+                  })
+                  this.apiService.seenThisNotification({
+                    MaTaiKhoan: this.state.userid,
+                    LoaiNguoiChinh: 2,
+                    Id: parseInt(notificationOpen.notification.data.idNoti)})
+
+                    this.props.navigation.navigate('PatientProfile', { id: notificationOpen.notification.data.maTaiKhoanLienQuan });
+                }
+              })
+          }
+         
+          break;
+        }
+      }
       // this.showAlert(title, body);
     }
     /*

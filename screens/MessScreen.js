@@ -13,7 +13,7 @@ class HomeScreen extends Component {
         super(props);
         this.state = {
             patients: [],
-            refeshing: false,
+            refeshing: true,
             focus: false,
             textsearch: "",
             no: '',

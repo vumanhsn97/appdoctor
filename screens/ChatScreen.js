@@ -62,8 +62,8 @@ export class RightListItems extends PureComponent {
 
     render() {
         let _time = new Date(this.props.item.NgayGioGui);
-        var timezone = _time.getTimezoneOffset() * 60000;
-        _time = new Date(_time.getTime() + timezone);
+        //var timezone = _time.getTimezoneOffset() * 60000;
+        //_time = new Date(_time.getTime() + timezone);
         // alert(this.props.item.NgayGioGui);
         return (
             <View style={{ flexDirection: 'row', alignSelf: 'flex-end', }}>
@@ -74,7 +74,7 @@ export class RightListItems extends PureComponent {
                 </View>
                 <View style={[styles.BubbleChat, styles.rightBubbleChat]}>
                     {
-                        this.props.item.LoaiDoanChat === 1 
+                        this.props.item.LoaiDoanChat === 1
                             ?
                             <Text style={{ paddingTop: 5, color: 'white', fontSize: 17 }}>
                                 {this.props.item.NoiDung}
@@ -99,8 +99,8 @@ export class LeftListItems extends PureComponent {
 
     render() {
         let _time = new Date(this.props.item.NgayGioGui);
-        var timezone = _time.getTimezoneOffset() * 60000;
-        _time = new Date(_time.getTime() + timezone);
+        //var timezone = _time.getTimezoneOffset() * 60000;
+        // _time = new Date(_time.getTime() + timezone);
         return (
             <View style={{ flexDirection: 'row', alignSelf: 'flex-start', }}>
                 <Avatar
@@ -112,7 +112,7 @@ export class LeftListItems extends PureComponent {
                 />
                 <View style={[styles.BubbleChat, styles.leftBubbleChat]}>
                     {
-                        this.props.item.LoaiDoanChat === 1 
+                        this.props.item.LoaiDoanChat === 1
                             ?
                             <Text style={{ paddingTop: 5, color: 'black', fontSize: 17 }}>
                                 {this.props.item.NoiDung}
@@ -127,7 +127,7 @@ export class LeftListItems extends PureComponent {
                 </View>
                 <View style={{ justifyContent: 'flex-end', paddingBottom: 7, paddingHorizontal: 10, }}>
                     <Text style={{ fontSize: 12, color: 'silver', }}>
-                        {_time.getDate() + '/' + (_time.getMonth() + 1) + ' - ' + _time.getHours() + ':' + ((_time.getMinutes() < 10) ? '0' : '') + _time.getMinutes()}
+                        {_time.getDate() + '/' + (_time.getMonth() + 1) + ' - ' + _time.getHours() + ':' + (_time.getMinutes() < 10 ? '0' : '') + _time.getMinutes()}
                     </Text>
                 </View>
             </View>
@@ -333,7 +333,9 @@ export default class ChatScreen extends Component {
                 // alert(JSON.parse(JSON.stringify(msg)))   
                 msg.map((item) => {
                     // alert(JSON.stringify(item))
-                    let date = new Date(item.NgayGioGui)
+                    let date = new Date(item.NgayGioGui);
+                    var timezone = date.getTimezoneOffset() * 60000;
+                    date = new Date(date.getTime() + timezone);
                     let temp = {
                         MaNguoiGui: item.MaNguoiGui,
                         LoaiNguoiGui: item.LoaiNguoiGui,
@@ -456,7 +458,7 @@ const styles = StyleSheet.create({
     },
     leftBubbleChat: {
         marginLeft: 10,
-        maxWidth: scale(250),
+        maxWidth: scale(200),
         alignSelf: 'flex-start',
         backgroundColor: '#ffffff',//white
     },

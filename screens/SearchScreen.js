@@ -20,7 +20,7 @@ class SearchScreen extends Component {
         try {
             const result = await Share.share({
                 message:
-                    'Truy cập link gì gì đó để cài đặt ứng dụng',
+                    'Truy cập link trên app store để để cài đặt ứng dụng',
             });
 
             if (result.action === Share.sharedAction) {
@@ -98,7 +98,8 @@ class SearchScreen extends Component {
                         onChangeText={(text) => this._searchPatient(text)}
                         //autoFocus={true}
                         placeholder="Nhập số điện thoại bệnh nhân"
-                        keyboardType='default'
+                        keyboardType='numeric'
+
                     />
                 </View>
                 {this.state.fail === true ? <Text></Text> : <View style={{ marginLeft: 'auto', marginRight: 'auto' }}>

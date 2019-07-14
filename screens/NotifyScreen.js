@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, AppState } from 'react-native';
+import { View, Text, Image, TouchableOpacity, FlatList, AppState, ActivityIndicator } from 'react-native';
 import { NavigationEvents } from 'react-navigation'
 import * as actions from '../actions';
 import api from '../services/config';
@@ -21,7 +21,7 @@ class NotifyScreen extends Component {
         }
     }
 
-    onLoadNotification = async() => {
+    onLoadNotification = async () => {
         const userId = await AsyncStorage.getItem('UserId');
         axios.get(api + 'notifications', {
             params: {
@@ -33,7 +33,7 @@ class NotifyScreen extends Component {
             let data = response.data;
             if (data.status == 'success') {
                 data = data.notifications;
-                
+
                 this.setState({ notifications: [...this.state.notifications, ...data], loading: false, refreshing: false });
             }
         })
@@ -72,12 +72,13 @@ class NotifyScreen extends Component {
     }
 
     onLoadMoreNotification = () => {
-        this.setState({ page: this.state.page + 1 }, async() => { await this.onLoadNotification() });
+        this.setState({ page: this.state.page + 1 }, async () => { await this.onLoadNotification() });
     }
 
     onRefreshing = () => {
         this.setState({
             refreshing: true,
+            loading: true,
             page: 1,
             notifications: []
         }, async () => { await this.onLoadNotification() })
@@ -103,10 +104,27 @@ class NotifyScreen extends Component {
     }
 
     _renderNoNoti = () => {
-        if (this.state.notifications.length < 1) {
+        if (this.state.notifications.length < 1 && !this.state.loading) {
             return (
                 <View style={{ alignItems: 'center' }}>
                     <Text>Chưa có thông báo</Text>
+                </View>
+            )
+        }
+        if (this.state.loading) {
+            return (
+                <View style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    justifyContent: 'space-around',
+                    padding: 20
+                }}>
+                    <View style={{
+                        flexDirection: 'column'
+                    }}>
+                        <ActivityIndicator size="large" color="#00ff00" />
+                    </View>
                 </View>
             )
         }
